@@ -453,13 +453,13 @@ canvas { display: block; width: 100% !important; }
 ═══════════════════════════════════════════════════ -->
 <script>
 const STRAVA_CONFIG = {
-  client_id:     '252938',       // Strava → Settings → My API Application
+  client_id:     '252938',       // Strava -> Settings -> My API Application
   client_secret: '18ef194f9f2f44b69cc9e83557c17fc3719d7930',   // idem
-  redirect_uri:  https://vgfalcao.github.io/granfondo/,
+  redirect_uri:  'https://vgfalcao.github.io/granfondo/',
   scope:         'activity:read_all'
 };
 
-// ── Constantes de treino ──────────────────────────────
+// -- Constantes de treino ------------------------------
 const FC_MAX  = 182;
 const LTHR    = 164;
 const PESO_KG = 70;
@@ -478,7 +478,7 @@ function getZone(fc) {
   return ZONES.find(z => fc >= z.lo && fc < z.hi) || ZONES[4];
 }
 
-// ── Plano Gran Fondo — 36 semanas ────────────────────
+// -- Plano Gran Fondo -- 36 semanas --------------------
 const GF_PLAN = [
   {s:1,d:42},{s:2,d:46},{s:3,d:50},{s:4,d:39,desc:true},
   {s:5,d:55},{s:6,d:60},{s:7,d:66},{s:8,d:51,desc:true},
@@ -975,9 +975,9 @@ const GF_PLAN = [
 </div><!-- /shell -->
 
 <script>
-/* ═══════════════════════════════════════════════════════
+/* =======================================================
    STRAVA OAUTH & DATA
-═══════════════════════════════════════════════════════ */
+======================================================= */
 
 // Token storage
 let tokens = JSON.parse(localStorage.getItem('strava_tokens') || 'null');
@@ -1020,7 +1020,7 @@ async function exchangeCode(code) {
     window.history.replaceState({}, '', window.location.pathname);
     await loadData();
   } else {
-    setSyncState('error', 'Erro na autenticação');
+    setSyncState('error', 'Erro na autenticacao');
   }
 }
 
@@ -1084,9 +1084,9 @@ function setSyncState(state, label) {
   lbl.textContent = label;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* =======================================================
    METRICS CALCULATION
-═══════════════════════════════════════════════════════ */
+======================================================= */
 
 function calcHrTSS(dur_sec, fc_avg) {
   if (!dur_sec || !fc_avg) return 0;
@@ -1173,9 +1173,9 @@ function getMonthlyData(activities) {
   return months;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* =======================================================
    CHARTS
-═══════════════════════════════════════════════════════ */
+======================================================= */
 
 const C = { or:'#e8530a', tl:'#0b7a6e', gd:'#c47c0a', sl:'#3d5a80', pl:'#6b3fa0', cr:'#c0332e' };
 const gc = () => 'rgba(28,27,24,0.07)';
@@ -1190,7 +1190,7 @@ function buildStaticCharts() {
   dc('tssDayChart');
   charts['tssDayChart'] = new Chart(document.getElementById('tssDayChart').getContext('2d'), {
     type: 'bar',
-    data: { labels: ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+    data: { labels: ['Seg','Ter','Qua','Qui','Sex','Sab','Dom'],
       datasets: [{ data: [55,65,40,75,30,120,0],
         backgroundColor: [C.sl+'bb',C.gd+'bb',C.tl+'66',C.cr+'bb',C.tl+'aa',C.pl+'bb','#e5e4df'],
         borderRadius: 5 }]},
@@ -1214,7 +1214,7 @@ function buildStaticCharts() {
     data: { labels: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12'],
       datasets: [
         { label:'Alvo (rpm)', data:[82,83,84,null,85,86,87,null,88,90,90,92], borderColor:C.sl, backgroundColor:C.sl+'18', fill:true, pointRadius:3, tension:0.3, spanGaps:false },
-        { label:'Mínimo',    data:[78,78,80,null,82,83,84,null,85,87,88,88], borderColor:'#b0afa8', backgroundColor:'transparent', pointRadius:0, borderDash:[3,3], tension:0.3, spanGaps:false }
+        { label:'Minimo',    data:[78,78,80,null,82,83,84,null,85,87,88,88], borderColor:'#b0afa8', backgroundColor:'transparent', pointRadius:0, borderDash:[3,3], tension:0.3, spanGaps:false }
       ]},
     options: { responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},min:74,max:96}} }
   });
@@ -1223,10 +1223,10 @@ function buildStaticCharts() {
   dc('suplChart');
   const sMatrix = [[1,1,1,1,1,1,1],[1,1,1,1,0,1,1],[1,1,1,1,1,1,1],[1,0,0,0,0,0,0],[1,1,0,1,1,0,0]];
   const sColors = [C.sl,C.tl,C.pl,C.cr,C.gd];
-  const sLabels = ['Creatina 5g','Whey 30g','Magnésio','B12+Folato','Eletrólitos'];
+  const sLabels = ['Creatina 5g','Whey 30g','Magnesio','B12+Folato','Eletrolitos'];
   charts['suplChart'] = new Chart(document.getElementById('suplChart').getContext('2d'), {
     type: 'bar',
-    data: { labels: ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+    data: { labels: ['Seg','Ter','Qua','Qui','Sex','Sab','Dom'],
       datasets: sMatrix.map((row,i) => ({ label:sLabels[i], data:row.map(v=>v*(i+1)), backgroundColor:sColors[i]+'99', borderRadius:2, categoryPercentage:.75 })) },
     options: { responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},stacked:true},y:{display:false,stacked:true}} }
   });
@@ -1241,35 +1241,35 @@ function buildDynamicCharts(activities) {
   const mData = getMonthlyData(activities);
   const months = Object.keys(mData).sort().slice(-13);
 
-  /* ── Status metrics ── */
+  /* -- Status metrics -- */
   const cur = pmc[pmc.length - 1] || {};
-  document.getElementById('mCtl').textContent  = cur.ctl || '—';
-  document.getElementById('mTsb').textContent  = cur.tsb || '—';
-  document.getElementById('mTsbSub').textContent = cur.tsb > 0 ? 'forma / pré-competição' : cur.tsb > -15 ? 'zona produtiva' : 'alta fadiga';
-  document.getElementById('pmcCtl').textContent = cur.ctl || '—';
-  document.getElementById('pmcAtl').textContent = cur.atl || '—';
-  document.getElementById('pmcTsb').textContent = cur.tsb || '—';
+  document.getElementById('mCtl').textContent  = cur.ctl || '--';
+  document.getElementById('mTsb').textContent  = cur.tsb || '--';
+  document.getElementById('mTsbSub').textContent = cur.tsb > 0 ? 'forma / pre-competicao' : cur.tsb > -15 ? 'zona produtiva' : 'alta fadiga';
+  document.getElementById('pmcCtl').textContent = cur.ctl || '--';
+  document.getElementById('pmcAtl').textContent = cur.atl || '--';
+  document.getElementById('pmcTsb').textContent = cur.tsb || '--';
   document.getElementById('pmcTsbSub').textContent = cur.tsb > 0 ? 'forma' : cur.tsb > -15 ? 'produtivo' : 'fadiga alta';
-  document.getElementById('pmcRef').textContent = cur.ctl ? `CTL ${cur.ctl}` : '—';
-  document.getElementById('pmcWeekTss').textContent = wTSS.length ? wTSS[wTSS.length-1].tss : '—';
+  document.getElementById('pmcRef').textContent = cur.ctl ? `CTL ${cur.ctl}` : '--';
+  document.getElementById('pmcWeekTss').textContent = wTSS.length ? wTSS[wTSS.length-1].tss : '--';
   document.getElementById('pmcTip').textContent = cur.tsb
-    ? `TSB ${cur.tsb}: ${cur.tsb>0?'forma positiva — bom para competição':cur.tsb>-15?'zona de construção produtiva (ideal −5 a −15)':'fadiga acumulada alta — verificar descanso'}. Ramp rate atual: +${Math.round((cur.ctl - (pmc[pmc.length-8]||{ctl:cur.ctl}).ctl)/1)} CTL/semana.`
+    ? `TSB ${cur.tsb}: ${cur.tsb>0?'forma positiva -- bom para competicao':cur.tsb>-15?'zona de construcao produtiva (ideal ?5 a ?15)':'fadiga acumulada alta -- verificar descanso'}. Ramp rate atual: +${Math.round((cur.ctl - (pmc[pmc.length-8]||{ctl:cur.ctl}).ctl)/1)} CTL/semana.`
     : 'Carregando dados PMC...';
 
   if (d30.length) {
     const fcAvg  = d30.filter(a=>a.average_heartrate).map(a=>a.average_heartrate);
     const velAvg = d30.map(a=>(a.average_speed||0)*3.6);
     const efVals = long.map(a => parseFloat(calcEF(a.average_speed, a.average_heartrate))).filter(Boolean);
-    document.getElementById('mFc').textContent    = fcAvg.length  ? (fcAvg.reduce((s,v)=>s+v,0)/fcAvg.length).toFixed(0)+' bpm' : '—';
-    document.getElementById('mVel').textContent   = velAvg.length ? (velAvg.reduce((s,v)=>s+v,0)/velAvg.length).toFixed(1) : '—';
-    document.getElementById('mEf').textContent    = efVals.length ? (efVals.reduce((s,v)=>s+v,0)/efVals.length).toFixed(3) : '—';
+    document.getElementById('mFc').textContent    = fcAvg.length  ? (fcAvg.reduce((s,v)=>s+v,0)/fcAvg.length).toFixed(0)+' bpm' : '--';
+    document.getElementById('mVel').textContent   = velAvg.length ? (velAvg.reduce((s,v)=>s+v,0)/velAvg.length).toFixed(1) : '--';
+    document.getElementById('mEf').textContent    = efVals.length ? (efVals.reduce((s,v)=>s+v,0)/efVals.length).toFixed(3) : '--';
     const longRides = activities.filter(a=>(a.distance||0)/1000>=15&&a.average_heartrate&&a.average_speed);
     const efAll = longRides.map(a=>parseFloat(calcEF(a.average_speed,a.average_heartrate))).filter(Boolean);
     if (efAll.length > 1) {
       const first = efAll.slice(0, Math.floor(efAll.length/3));
       const last  = efAll.slice(-Math.floor(efAll.length/3));
       const gain  = ((last.reduce((s,v)=>s+v,0)/last.length - first.reduce((s,v)=>s+v,0)/first.length) / (first.reduce((s,v)=>s+v,0)/first.length) * 100).toFixed(0);
-      document.getElementById('mEfSub').textContent = `${gain > 0 ? '+'+gain : gain}% vs início`;
+      document.getElementById('mEfSub').textContent = `${gain > 0 ? '+'+gain : gain}% vs inicio`;
     }
     document.getElementById('aRides').textContent = d30.length;
     document.getElementById('aDist').textContent  = (d30.reduce((s,a)=>s+(a.distance||0),0)/1000).toFixed(0);
@@ -1279,8 +1279,8 @@ function buildDynamicCharts(activities) {
 
   // Record
   const maxDist = Math.max(...activities.map(a=>(a.distance||0)/1000));
-  document.getElementById('mRecord').textContent    = maxDist ? maxDist.toFixed(0)+' km' : '—';
-  document.getElementById('gfSubtitle').textContent = `Recorde atual: ${maxDist?maxDist.toFixed(0):'—'} km · Progressão de 36 semanas · 3 fases`;
+  document.getElementById('mRecord').textContent    = maxDist ? maxDist.toFixed(0)+' km' : '--';
+  document.getElementById('gfSubtitle').textContent = `Recorde atual: ${maxDist?maxDist.toFixed(0):'--'} km * Progressao de 36 semanas * 3 fases`;
 
   // Vel rides longas 30d
   const lr30 = d30.filter(a=>(a.distance||0)/1000>=20&&a.average_speed);
@@ -1295,7 +1295,7 @@ function buildDynamicCharts(activities) {
     document.getElementById('cadAtual').textContent = (cadRides.reduce((s,a)=>s+a.average_cadence*2,0)/cadRides.length).toFixed(0);
   }
 
-  /* ── Zone donut ── */
+  /* -- Zone donut -- */
   const zonePct = getZoneDist(d30);
   dc('zoneDonut');
   charts['zoneDonut'] = new Chart(document.getElementById('zoneDonut').getContext('2d'), {
@@ -1304,7 +1304,7 @@ function buildDynamicCharts(activities) {
     options: { responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:tc(),font:{size:11},boxWidth:10}},tooltip:{callbacks:{label:c=>' '+c.raw+'%'}}} }
   });
 
-  /* ── FC trend monthly ── */
+  /* -- FC trend monthly -- */
   const fcMonthly = months.map(m => {
     const fc = mData[m].fc;
     return fc.length ? (fc.reduce((s,v)=>s+v,0)/fc.length).toFixed(1) : null;
@@ -1317,7 +1317,7 @@ function buildDynamicCharts(activities) {
     options: { ...bo(100,155), plugins:{legend:{display:false}} }
   });
 
-  /* ── Weekly volume ── */
+  /* -- Weekly volume -- */
   const weekVol = (() => {
     const wk = {};
     activities.forEach(a => {
@@ -1335,7 +1335,7 @@ function buildDynamicCharts(activities) {
     options: { ...bo(0,null), plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+'km'}}} }
   });
 
-  /* ── Scatter: dist vs vel ── */
+  /* -- Scatter: dist vs vel -- */
   const scatter = activities.filter(a=>(a.distance||0)/1000>=15&&a.average_heartrate&&a.average_speed).map(a=>({
     x: parseFloat((a.distance/1000).toFixed(1)),
     y: parseFloat((a.average_speed*3.6).toFixed(1)),
@@ -1346,10 +1346,10 @@ function buildDynamicCharts(activities) {
   charts['scatterChart'] = new Chart(document.getElementById('scatterChart').getContext('2d'), {
     type: 'scatter',
     data: { datasets:[{ data:scatter, backgroundColor:scatter.map(p=>p.fc<127?C.tl:p.fc<146?C.gd:C.cr), pointRadius:5, pointHoverRadius:7 }]},
-    options: { responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.dt}: ${c.raw.x}km @ ${c.raw.y}km/h, FC ${c.raw.fc}`}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}},title:{display:true,text:'Distância (km)',color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},title:{display:true,text:'Vel. média (km/h)',color:tc(),font:{size:10}}}}}
+    options: { responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.dt}: ${c.raw.x}km @ ${c.raw.y}km/h, FC ${c.raw.fc}`}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}},title:{display:true,text:'Distancia (km)',color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},title:{display:true,text:'Vel. media (km/h)',color:tc(),font:{size:10}}}}}
   });
 
-  /* ── Zone comparison ── */
+  /* -- Zone comparison -- */
   dc('zoneCompChart');
   charts['zoneCompChart'] = new Chart(document.getElementById('zoneCompChart').getContext('2d'), {
     type: 'bar',
@@ -1361,7 +1361,7 @@ function buildDynamicCharts(activities) {
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:11},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},max:80}}}
   });
 
-  /* ── Zone evolution monthly ── */
+  /* -- Zone evolution monthly -- */
   const zEvol = months.map(m => {
     const total = mData[m].z.reduce((s,v)=>s+v,0)||1;
     return mData[m].z.map(v=>Math.round(v/total*100));
@@ -1379,9 +1379,9 @@ function buildDynamicCharts(activities) {
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:9}},stacked:true},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},stacked:true,max:100}}}
   });
   const lastZ = zEvol[zEvol.length-1]||[0,0,0,0,0];
-  document.getElementById('zoneTip').textContent = `Mês atual: ${lastZ[1]}% Z2, ${lastZ[2]}% Z3. Meta: Z2 >55% do volume total.`;
+  document.getElementById('zoneTip').textContent = `Mes atual: ${lastZ[1]}% Z2, ${lastZ[2]}% Z3. Meta: Z2 >55% do volume total.`;
 
-  /* ── PMC chart ── */
+  /* -- PMC chart -- */
   const pmcSlice = pmc.slice(-112); // 16 semanas
   const pmcWeekly = [];
   for (let i = 0; i < pmcSlice.length; i += 7) pmcWeekly.push(pmcSlice[Math.min(i+6, pmcSlice.length-1)]);
@@ -1398,7 +1398,7 @@ function buildDynamicCharts(activities) {
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y2:{position:'right',grid:{display:false},ticks:{color:tc(),font:{size:10}}}}}
   });
 
-  /* ── TSS weekly chart ── */
+  /* -- TSS weekly chart -- */
   dc('tssWeeklyChart');
   charts['tssWeeklyChart'] = new Chart(document.getElementById('tssWeeklyChart').getContext('2d'), {
     type: 'bar',
@@ -1407,31 +1407,31 @@ function buildDynamicCharts(activities) {
     options:{...bo(0,null),plugins:{legend:{display:false}}}
   });
 
-  /* ── Activities table ── */
+  /* -- Activities table -- */
   const tbody = document.getElementById('actBody');
   const recent = activities.slice(0, 30);
   tbody.innerHTML = recent.map(a => {
     const dist = ((a.distance||0)/1000).toFixed(1);
     const vel  = ((a.average_speed||0)*3.6).toFixed(1);
-    const fc   = a.average_heartrate || '—';
+    const fc   = a.average_heartrate || '--';
     const zone = a.average_heartrate ? getZone(a.average_heartrate) : null;
     const tss  = calcHrTSS(a.moving_time, a.average_heartrate);
-    const ef   = calcEF(a.average_speed, a.average_heartrate) || '—';
+    const ef   = calcEF(a.average_speed, a.average_heartrate) || '--';
     const date = a.start_date_local.slice(0,10);
-    const zdot = zone ? `<span class="zone-dot" style="background:${zone.color}"></span>${zone.name}` : '—';
+    const zdot = zone ? `<span class="zone-dot" style="background:${zone.color}"></span>${zone.name}` : '--';
     return `<tr>
       <td>${date}</td>
       <td>${a.name||'Ride'}</td>
       <td class="act-dist">${dist} km</td>
       <td class="act-vel">${vel} km/h</td>
-      <td class="act-fc">${fc}${fc!=='—'?' bpm':''}</td>
+      <td class="act-fc">${fc}${fc!=='--'?' bpm':''}</td>
       <td>${zdot}</td>
-      <td class="act-vel">${tss||'—'}</td>
+      <td class="act-vel">${tss||'--'}</td>
       <td class="act-vel">${ef}</td>
     </tr>`;
   }).join('');
 
-  /* ── Status date ── */
+  /* -- Status date -- */
   document.getElementById('statusDate').textContent = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'short',year:'numeric'});
 }
 
@@ -1440,14 +1440,14 @@ function clearDashboard() {
    'pmcCtl','pmcAtl','pmcTsb','pmcWeekTss',
    'aRides','aDist','aTss','aElev','velAtual','cadAtual'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.textContent = '—';
+    if (el) el.textContent = '--';
   });
   document.getElementById('actBody').innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--ink3)">Conecte o Strava para ver suas atividades</td></tr>`;
 }
 
-/* ═══════════════════════════════════════════════════════
+/* =======================================================
    LOAD DATA
-═══════════════════════════════════════════════════════ */
+======================================================= */
 
 async function loadData() {
   setSyncState('loading', 'Carregando rides...');
@@ -1458,8 +1458,8 @@ async function loadData() {
     allActivities = await fetchActivities(200, 3);
     setSyncState('ok', 'Strava conectado');
     const n   = allActivities.length;
-    const lat = allActivities[0]?.start_date_local?.slice(0,10) || '—';
-    document.getElementById('syncMeta').textContent = `${n} rides · última: ${lat}`;
+    const lat = allActivities[0]?.start_date_local?.slice(0,10) || '--';
+    document.getElementById('syncMeta').textContent = `${n} rides * ultima: ${lat}`;
     buildDynamicCharts(allActivities);
   } catch(e) {
     setSyncState('error', 'Erro ao carregar');
@@ -1467,9 +1467,9 @@ async function loadData() {
   }
 }
 
-/* ═══════════════════════════════════════════════════════
+/* =======================================================
    NAVIGATION
-═══════════════════════════════════════════════════════ */
+======================================================= */
 
 function sw(name, btn) {
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -1496,9 +1496,9 @@ function setDia(dia, btn) {
   });
 }
 
-/* ═══════════════════════════════════════════════════════
+/* =======================================================
    BOOT
-═══════════════════════════════════════════════════════ */
+======================================================= */
 document.addEventListener('DOMContentLoaded', async () => {
   buildStaticCharts();
 
@@ -1517,7 +1517,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   setSyncState('idle', 'Aguardando Strava');
-  document.getElementById('syncMeta').textContent = 'Não conectado';
+  document.getElementById('syncMeta').textContent = 'Nao conectado';
 });
 </script>
 </body>
