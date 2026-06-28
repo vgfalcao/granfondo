@@ -6,872 +6,1156 @@
 <title>Hub de Treino — Victor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
-:root{--bg:#f4f3ef;--bg2:#ffffff;--bg3:#eeede9;--bg4:#e5e4df;--ink:#1c1b18;--ink2:#6a6960;--ink3:#b0afa8;--rule:rgba(28,27,24,0.08);--rule2:rgba(28,27,24,0.14);--orange:#e8530a;--orange2:rgba(232,83,10,0.10);--teal:#0b7a6e;--teal2:rgba(11,122,110,0.10);--gold:#c47c0a;--gold2:rgba(196,124,10,0.10);--slate:#3d5a80;--slate2:rgba(61,90,128,0.10);--plum:#6b3fa0;--plum2:rgba(107,63,160,0.10);--crimson:#c0332e;--crimson2:rgba(192,51,46,0.10);--green:#2d7a3a;--green2:rgba(45,122,58,0.12);--r:6px;--rl:10px;--font-sans:'Syne',sans-serif;--font-mono:'JetBrains Mono',monospace}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{background:var(--bg);scroll-behavior:smooth}
-body{font-family:var(--font-sans);background:var(--bg);color:var(--ink);font-size:13px;line-height:1.55;min-height:100vh}
-.shell{display:flex;height:100vh;overflow:hidden}
-.sidebar{width:218px;flex-shrink:0;background:var(--ink);color:#f4f3ef;display:flex;flex-direction:column;overflow-y:auto}
-.sidebar-header{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,0.08)}
-.sidebar-logo{font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:8px}
-.sidebar-name{font-size:18px;font-weight:700;letter-spacing:-.02em;color:#f4f3ef;line-height:1.1}
-.sidebar-sub{font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,0.3);margin-top:4px}
-.strava-badge{display:inline-flex;align-items:center;gap:5px;margin-top:10px;background:var(--orange);color:white;font-family:var(--font-mono);font-size:9px;font-weight:500;padding:3px 8px;border-radius:3px;cursor:pointer;border:none;transition:opacity .15s}
-.strava-badge:hover{opacity:.85}.strava-badge.connected{background:var(--teal);cursor:default}
-.nav-group{padding:14px 10px 6px}
-.nav-group-label{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.25);padding:0 8px;margin-bottom:5px}
-.nav-item{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:var(--r);cursor:pointer;color:rgba(255,255,255,0.5);font-size:12px;font-weight:500;border:none;background:none;width:100%;text-align:left;transition:all .12s}
-.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85)}.nav-item.active{background:rgba(255,255,255,0.10);color:#f4f3ef}
-.nav-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.sidebar-footer{margin-top:auto;padding:14px 18px;border-top:1px solid rgba(255,255,255,0.08);font-family:var(--font-mono);font-size:9px;color:rgba(255,255,255,0.25)}
-.sync-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;color:rgba(255,255,255,0.35)}
-.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--teal)}.sync-dot.loading{background:var(--gold);animation:pulse 1s infinite}.sync-dot.error{background:var(--crimson)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-.main{flex:1;overflow-y:auto;padding:28px 32px;background:var(--bg)}
-.main::-webkit-scrollbar{width:4px}.main::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
-.panel{display:none}.panel.active{display:block}
-.page-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;border-bottom:1px solid var(--rule);padding-bottom:14px}
-.page-title{font-size:20px;font-weight:700;letter-spacing:-.025em}
-.page-sub{font-family:var(--font-mono);font-size:10px;color:var(--ink3);letter-spacing:.04em}
-.mrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;margin-bottom:22px}
-.mc{background:var(--bg2);border:1px solid var(--rule);border-radius:var(--rl);padding:13px 15px;position:relative;overflow:hidden;transition:transform .12s}
-.mc:hover{transform:translateY(-1px)}.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.mc.orange::before{background:var(--orange)}.mc.teal::before{background:var(--teal)}.mc.gold::before{background:var(--gold)}.mc.slate::before{background:var(--slate)}.mc.plum::before{background:var(--plum)}.mc.green::before{background:var(--green)}
-.mc.orange{background:var(--orange2);border-color:rgba(232,83,10,.2)}.mc.teal{background:var(--teal2);border-color:rgba(11,122,110,.2)}.mc.gold{background:var(--gold2);border-color:rgba(196,124,10,.2)}.mc.slate{background:var(--slate2);border-color:rgba(61,90,128,.2)}.mc.plum{background:var(--plum2);border-color:rgba(107,63,160,.2)}.mc.green{background:var(--green2);border-color:rgba(45,122,58,.2)}
-.ml{font-family:var(--font-mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);margin-bottom:5px}
-.mv{font-size:20px;font-weight:700;letter-spacing:-.025em;line-height:1}
-.mc.orange .mv{color:var(--orange)}.mc.teal .mv{color:var(--teal)}.mc.gold .mv{color:var(--gold)}.mc.slate .mv{color:var(--slate)}.mc.plum .mv{color:var(--plum)}.mc.green .mv{color:var(--green)}
-.ms{font-family:var(--font-mono);font-size:9px;color:var(--ink3);margin-top:4px}
-.sec{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin:20px 0 9px}.sec:first-child{margin-top:0}
-.card{background:var(--bg2);border:1px solid var(--rule);border-radius:var(--rl);padding:14px 16px;margin-bottom:12px}
-.trow{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--rule);gap:12px}.trow:last-child{border-bottom:none}
-.trow.hl{background:var(--bg3);border-radius:5px;padding:6px 8px;margin:2px -8px}
-.tk{font-size:12px;color:var(--ink2);flex-shrink:0}.tv{font-size:12px;font-weight:600;text-align:right}
-.badge{display:inline-block;font-size:9px;padding:2px 7px;border-radius:3px;font-family:var(--font-mono);font-weight:500;letter-spacing:.02em}
-.bz1{background:var(--teal2);color:var(--teal)}.bz2{background:var(--slate2);color:var(--slate)}.bz3{background:var(--gold2);color:var(--gold)}.bz4{background:var(--crimson2);color:var(--crimson)}.bok{background:var(--teal2);color:var(--teal)}.bpur{background:var(--plum2);color:var(--plum)}.bgr{background:var(--bg3);color:var(--ink3)}.bgrn{background:var(--green2);color:var(--green)}
-.tip{font-size:11px;color:var(--ink2);background:var(--slate2);border-radius:var(--r);padding:9px 13px;margin-top:9px;line-height:1.65;border-left:2px solid var(--slate)}
-.tip.g{background:var(--teal2);border-left-color:var(--teal);color:#084d47}.tip.w{background:var(--gold2);border-left-color:var(--gold);color:#7a4d00}.tip.r{background:var(--crimson2);border-left-color:var(--crimson);color:#7a1f1c}.tip.or{background:var(--orange2);border-left-color:var(--orange);color:#7a2e00}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:760px){.two{grid-template-columns:1fr}}
-.ch{position:relative;margin-bottom:18px}
-canvas{display:block;width:100%!important}
-.week-grid{display:grid;grid-template-columns:52px 20px 100px 1fr 80px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule);font-size:11px}.week-grid:last-child{border-bottom:none}
-.week-grid.today{background:rgba(61,90,128,.06);border-radius:6px;padding:8px 10px;margin:0 -10px}
-.wday{font-weight:700;font-size:12px}
-.wstatus{width:10px;height:10px;border-radius:50%;display:inline-block}
-.wstatus.ok{background:var(--green)}.wstatus.warn{background:var(--gold)}.wstatus.bad{background:var(--crimson)}.wstatus.rest{background:var(--bg4);border:1px solid var(--ink3)}.wstatus.future{background:transparent;border:1px dashed var(--ink3)}
-.alert-card{border-radius:var(--rl);padding:13px 16px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start}
-.alert-card.crit{background:var(--crimson2);border:1px solid rgba(192,51,46,.25)}.alert-card.warn{background:var(--gold2);border:1px solid rgba(196,124,10,.25)}.alert-card.ok{background:var(--green2);border:1px solid rgba(45,122,58,.25)}.alert-card.info{background:var(--slate2);border:1px solid rgba(61,90,128,.2)}
-.alert-icon{font-size:18px;flex-shrink:0;margin-top:1px}.alert-title{font-size:12px;font-weight:700;margin-bottom:3px}
-.alert-card.crit .alert-title{color:var(--crimson)}.alert-card.warn .alert-title{color:var(--gold)}.alert-card.ok .alert-title{color:var(--green)}.alert-card.info .alert-title{color:var(--slate)}
-.alert-body{font-size:11px;color:var(--ink2);line-height:1.6}
-.alert-fix{font-size:10px;font-family:var(--font-mono);margin-top:5px;padding:4px 8px;border-radius:4px;display:inline-block;background:rgba(28,27,24,.06);color:var(--ink)}
-.evo-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.evo-block{background:var(--bg2);border:1px solid var(--rule);border-radius:var(--rl);padding:13px 15px}
-.evo-label{font-family:var(--font-mono);font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.evo-val{font-size:22px;font-weight:700;letter-spacing:-.03em}
-.evo-sub{font-family:var(--font-mono);font-size:10px;margin-top:3px}
-.evo-delta{display:inline-block;font-family:var(--font-mono);font-size:10px;padding:1px 6px;border-radius:3px;margin-top:5px}
-.evo-delta.pos{background:var(--green2);color:var(--green)}.evo-delta.neg{background:var(--crimson2);color:var(--crimson)}
-.plan-banner{background:linear-gradient(120deg,var(--plum2) 0%,var(--slate2) 100%);border:1px solid rgba(107,63,160,.2);border-radius:var(--rl);padding:14px 18px;margin-bottom:18px}
-.plan-banner-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.plan-banner-title{font-size:14px;font-weight:700;letter-spacing:-.02em;color:var(--plum)}
-.plan-banner-week{font-family:var(--font-mono);font-size:11px;color:var(--ink2)}
-.plan-progress-bar{height:6px;background:rgba(107,63,160,.15);border-radius:3px;overflow:hidden}
-.plan-progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--slate),var(--plum));transition:width .5s ease}
-.week-marker{display:inline-flex;align-items:center;gap:8px;background:var(--plum2);border:1px solid rgba(107,63,160,.25);border-radius:5px;padding:4px 10px;margin-bottom:12px}
-.week-marker-num{font-size:18px;font-weight:700;color:var(--plum);font-family:var(--font-mono)}
-.week-marker-label{font-size:11px;color:var(--ink2)}
-.dayrow{display:grid;grid-template-columns:50px 80px 1fr;gap:10px;align-items:start;padding:9px 0;border-bottom:1px solid var(--rule)}.dayrow:last-child{border-bottom:none}.dayrow.rest{opacity:.4}
-.dn{font-weight:700;font-size:12px;padding-top:2px}.dd{font-size:11px;color:var(--ink2);line-height:1.55}
-.prog-wrap{overflow-x:auto}
-.prog-row{display:grid;grid-template-columns:28px 54px 68px 60px 72px 1fr;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid var(--rule);font-size:11px}.prog-row:last-child{border-bottom:none}
-.prog-row.disc{opacity:.38}.prog-row.milestone{background:var(--plum2);border-radius:5px;padding:5px 6px;margin:0 -6px}
-.prog-row.curwk{background:rgba(45,122,58,.09);border-radius:5px;padding:5px 6px;margin:0 -6px;border-left:3px solid var(--green)}
-.pbar{height:3px;background:var(--bg4);border-radius:2px}.pbf{height:3px;border-radius:2px}
-.phase-card{border:1px solid var(--rule);border-radius:var(--rl);padding:13px 15px;margin-bottom:9px}
-.ph{font-size:13px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}.pd{font-size:11px;color:var(--ink2);line-height:1.6}
-.supl{display:flex;gap:14px;padding:9px 0;border-bottom:1px solid var(--rule);align-items:flex-start}.supl:last-child{border-bottom:none}
-.sn{font-size:12px;font-weight:600;min-width:160px;flex-shrink:0;line-height:1.35}.sn span{font-family:var(--font-mono);font-size:9px;font-weight:400;color:var(--ink3);display:block;margin-top:1px}.sd{font-size:11px;color:var(--ink2);line-height:1.55}
-.refeicao{display:grid;grid-template-columns:70px 1fr 52px;gap:9px;padding:7px 0;border-bottom:1px solid var(--rule);align-items:start}.refeicao:last-child{border-bottom:none}
-.rh{font-family:var(--font-mono);font-size:9px;font-weight:500;color:var(--ink3);padding-top:2px}.ri{font-size:11px;line-height:1.55}.rk2{font-family:var(--font-mono);font-size:9px;color:var(--ink3);text-align:right;padding-top:2px}
-.tgl{display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap}
-.tbtn{font-family:var(--font-sans);font-size:11px;font-weight:500;padding:5px 11px;border:1px solid var(--rule2);border-radius:4px;background:none;cursor:pointer;color:var(--ink2);transition:all .12s}
-.tbtn:hover{background:var(--bg3);color:var(--ink)}.tbtn.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.zone-grid{display:grid;grid-template-columns:50px 90px 80px 1fr;gap:8px;font-size:11px;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule)}.zone-grid:last-child{border-bottom:none}.zone-grid.hl{background:var(--bg3);border-radius:5px;padding:6px 9px;margin:0 -9px}
-.act-table{width:100%;border-collapse:collapse;font-size:11px}
-.act-table th{font-family:var(--font-mono);font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);text-align:left;padding:6px 10px;border-bottom:1px solid var(--rule)}
-.act-table td{padding:7px 10px;border-bottom:1px solid var(--rule)}.act-table tr:last-child td{border-bottom:none}.act-table tr:hover td{background:var(--bg3)}
-.act-dist{font-weight:700;font-family:var(--font-mono)}.act-vel{font-family:var(--font-mono)}.act-fc{font-family:var(--font-mono);color:var(--crimson)}
-.zone-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px}
+:root {
+  --bg:      #f4f3ef;
+  --bg2:     #ffffff;
+  --bg3:     #eeede9;
+  --bg4:     #e5e4df;
+  --ink:     #1c1b18;
+  --ink2:    #6a6960;
+  --ink3:    #b0afa8;
+  --rule:    rgba(28,27,24,0.08);
+  --rule2:   rgba(28,27,24,0.14);
+  --green:   #3B6D11;
+  --green-bg:#EAF3DE;
+  --amber:   #BA7517;
+  --amber-bg:#FAEEDA;
+  --red:     #A32D2D;
+  --red-bg:  #FCEBEB;
+  --blue:    #185FA5;
+  --blue-bg: #E6F1FB;
+  --purple:  #534AB7;
+  --purple-bg:#EEEDFE;
+  --r: 6px;
+  --rl: 10px;
+  --font-sans: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); }
+body {
+  font-family: var(--font-sans);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 100vh;
+  padding: 18px 16px 60px;
+}
+.wrap { max-width: 780px; margin: 0 auto; }
+
+/* HEADER */
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 14px; margin-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+}
+.h-title { font-size: 18px; font-weight: 700; letter-spacing: -.025em; }
+.h-sub { font-family: var(--font-mono); font-size: 10px; color: var(--ink3); margin-top: 2px; letter-spacing: .04em; }
+.h-right { display: flex; align-items: center; gap: 10px; }
+.sync {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 10px; color: var(--ink2);
+}
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink3); }
+.sync-dot.ok { background: #3B6D11; }
+.sync-dot.loading { background: var(--amber); animation: pulse 1s infinite; }
+.sync-dot.error { background: var(--red); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.btn-strava {
+  background: #e8530a; color: white;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+  padding: 5px 10px; border: none; border-radius: 3px;
+  cursor: pointer; letter-spacing: .02em;
+}
+.btn-strava:hover { opacity: .88; }
+.btn-strava.connected { background: var(--ink); }
+
+/* BLOCK */
+.block {
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: var(--rl);
+  padding: 16px 18px;
+  margin-bottom: 12px;
+}
+.block-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 12px;
+}
+.block-title {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink3);
+}
+.block-meta {
+  font-family: var(--font-mono);
+  font-size: 10px; color: var(--ink2);
+}
+
+/* BLOCK 1 — HOJE/AMANHÃ */
+.today-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 10px; }
+@media (max-width: 560px) { .today-grid { grid-template-columns: 1fr; } }
+.day-card {
+  border-radius: 8px;
+  padding: 14px 16px;
+  border: 1px solid transparent;
+}
+.day-card.primary { background: var(--blue-bg); border-color: rgba(24,95,165,0.18); }
+.day-card.rest    { background: var(--bg3); }
+.day-card.done    { background: var(--green-bg); border-color: rgba(59,109,17,0.18); }
+.day-card.miss    { background: var(--red-bg); border-color: rgba(163,45,45,0.18); }
+.dc-label {
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: .08em;
+  text-transform: uppercase; opacity: 0.75; margin-bottom: 4px;
+}
+.dc-title { font-size: 17px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 6px; }
+.dc-desc { font-size: 12px; color: var(--ink2); line-height: 1.5; }
+.dc-status { font-family: var(--font-mono); font-size: 10px; margin-top: 8px; font-weight: 500; }
+.day-card.primary .dc-title, .day-card.primary .dc-label, .day-card.primary .dc-status { color: var(--blue); }
+.day-card.done .dc-title, .day-card.done .dc-label, .day-card.done .dc-status { color: var(--green); }
+.day-card.miss .dc-title, .day-card.miss .dc-label, .day-card.miss .dc-status { color: var(--red); }
+
+/* BLOCK 2 — SEMANA */
+.week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.dayq {
+  background: var(--bg3);
+  border-left: 3px solid var(--ink3);
+  border-radius: 5px;
+  padding: 8px 8px 9px;
+  text-align: center;
+  min-height: 78px;
+  position: relative;
+}
+.dayq.green  { background: var(--green-bg);  border-left-color: var(--green); }
+.dayq.amber  { background: var(--amber-bg);  border-left-color: var(--amber); }
+.dayq.red    { background: var(--red-bg);    border-left-color: var(--red); }
+.dayq.future { background: var(--bg3);       border-left-color: var(--ink3); opacity: .55; }
+.dayq.today  { box-shadow: 0 0 0 2px var(--blue); }
+.dq-dow { font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; font-weight: 500; color: var(--ink2); }
+.dq-icon { font-size: 16px; margin: 4px 0 3px; font-weight: 700; }
+.dq-detail { font-family: var(--font-mono); font-size: 9px; color: var(--ink2); line-height: 1.3; }
+.dayq.green .dq-icon, .dayq.green .dq-dow, .dayq.green .dq-detail { color: var(--green); }
+.dayq.amber .dq-icon, .dayq.amber .dq-dow, .dayq.amber .dq-detail { color: var(--amber); }
+.dayq.red .dq-icon, .dayq.red .dq-dow, .dayq.red .dq-detail { color: var(--red); }
+.week-note {
+  font-size: 11px; color: var(--ink2);
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  line-height: 1.5;
+}
+.week-note strong { color: var(--ink); }
+
+/* BLOCK 3 — ADERENCIA */
+.adh-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.adh {
+  background: var(--bg3); border-radius: 8px; padding: 10px 12px;
+}
+.adh-week { font-family: var(--font-mono); font-size: 10px; color: var(--ink2); }
+.adh-pct { font-size: 22px; font-weight: 700; letter-spacing: -.02em; margin-top: 2px; line-height: 1; }
+.adh-sub { font-family: var(--font-mono); font-size: 9px; color: var(--ink3); margin-top: 3px; }
+.adh.green .adh-pct { color: var(--green); }
+.adh.amber .adh-pct { color: var(--amber); }
+.adh.red .adh-pct { color: var(--red); }
+.adh.gray .adh-pct { color: var(--ink2); }
+
+/* BLOCK 4 — EVOLUCAO */
+.evo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 560px) { .evo-grid { grid-template-columns: 1fr; gap: 10px; } }
+.evo-label { font-family: var(--font-mono); font-size: 10px; color: var(--ink2); }
+.evo-row { display: flex; align-items: baseline; gap: 6px; margin-top: 3px; }
+.evo-num { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.evo-delta { font-family: var(--font-mono); font-size: 11px; font-weight: 500; }
+.evo-delta.up   { color: var(--green); }
+.evo-delta.down { color: var(--green); }
+.evo-delta.bad  { color: var(--red); }
+.evo-base { font-family: var(--font-mono); font-size: 9px; color: var(--ink3); margin-top: 2px; }
+
+/* BLOCK 5 — PLANO */
+.plan-row {
+  display: grid;
+  grid-template-columns: 30px 60px 70px 80px 1fr;
+  gap: 8px; align-items: center;
+  padding: 7px 0;
+  border-top: 1px solid var(--rule);
+  font-size: 12px;
+}
+.plan-row:first-of-type { border-top: none; }
+.plan-row.head {
+  font-family: var(--font-mono); font-size: 9px; color: var(--ink3);
+  letter-spacing: .05em; padding: 4px 0 6px;
+}
+.plan-row.past { color: var(--ink3); }
+.plan-row.past .plan-week, .plan-row.past .plan-dist { text-decoration: line-through; }
+.plan-row.current {
+  background: var(--blue-bg); border-radius: 6px;
+  padding: 8px 10px; margin: 4px -10px;
+  border-top: none;
+  color: var(--blue); font-weight: 700;
+}
+.plan-row.current + .plan-row { border-top: none; }
+.plan-row.descarga { color: var(--ink2); font-style: italic; }
+.plan-row.milestone { color: var(--purple); font-weight: 700; }
+.plan-toggle {
+  background: none; border: 1px solid var(--rule2);
+  font-family: var(--font-mono); font-size: 10px;
+  padding: 5px 10px; border-radius: 4px; cursor: pointer;
+  color: var(--ink2); margin-top: 10px;
+}
+.plan-toggle:hover { background: var(--bg3); }
+.plan-week { font-weight: 700; }
+.plan-dist { font-family: var(--font-mono); }
+.plan-fc   { font-family: var(--font-mono); font-size: 11px; color: var(--ink2); }
+.plan-type { font-family: var(--font-mono); font-size: 10px; }
+.plan-status { font-family: var(--font-mono); font-size: 10px; color: var(--ink2); }
+
+/* BLOCK 6 — HISTORICO */
+.hist-toggle {
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink2); padding: 4px 0;
+}
+.hist-toggle:hover { color: var(--ink); }
+.hist-arrow { transition: transform .2s; display: inline-block; }
+.hist-toggle.open .hist-arrow { transform: rotate(90deg); }
+.hist-body { display: none; margin-top: 12px; }
+.hist-body.open { display: block; }
+.act-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.act-table th {
+  font-family: var(--font-mono); font-size: 9px; text-transform: uppercase;
+  letter-spacing: .04em; color: var(--ink3); text-align: left;
+  padding: 5px 8px; border-bottom: 1px solid var(--rule);
+}
+.act-table td { padding: 6px 8px; border-bottom: 1px solid var(--rule); }
+.act-table tr:last-child td { border-bottom: none; }
+.act-name { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.act-mono { font-family: var(--font-mono); }
+
+/* AUTH SCREEN */
+.auth {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 60vh; text-align: center; gap: 16px;
+}
+.auth h2 { font-size: 22px; font-weight: 700; letter-spacing: -.025em; }
+.auth p { font-size: 13px; color: var(--ink2); max-width: 380px; line-height: 1.55; }
+.btn-big {
+  background: #e8530a; color: white;
+  font-family: var(--font-sans); font-size: 13px; font-weight: 700;
+  padding: 11px 22px; border-radius: 6px; border: none;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-big:hover { opacity: .88; }
+.loader {
+  width: 28px; height: 28px;
+  border: 2px solid var(--rule2);
+  border-top-color: #e8530a;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-detail { font-family: var(--font-mono); font-size: 11px; color: var(--ink2); }
+
+.hidden { display: none !important; }
 </style>
 </head>
 <body>
-<script>
-const STRAVA_CONFIG={client_id:'252938',client_secret:'18ef194f9f2f44b69cc9e83557c17fc3719d7930',redirect_uri:'https://vgfalcao.github.io/granfondo/',scope:'activity:read_all'};
-const FC_MAX=182,LTHR=164,PESO_KG=70;
-// ── Ajuste esta data para a segunda-feira da semana 1 do plano ──
-const PLAN_START_DATE='2025-06-02';
-const ZONES=[{name:'Z1',lo:91,hi:109,color:'#0b7a6e'},{name:'Z2',lo:109,hi:127,color:'#3d5a80'},{name:'Z3',lo:127,hi:146,color:'#c47c0a'},{name:'Z4',lo:146,hi:164,color:'#c0332e'},{name:'Z5',lo:164,hi:220,color:'#6b3fa0'}];
-function getZone(fc){if(!fc)return null;return ZONES.find(z=>fc>=z.lo&&fc<z.hi)||ZONES[4]}
-const GF_PLAN=[{s:1,d:42},{s:2,d:46},{s:3,d:50},{s:4,d:39,desc:true},{s:5,d:55},{s:6,d:60},{s:7,d:66},{s:8,d:51,desc:true},{s:9,d:72},{s:10,d:79},{s:11,d:87},{s:12,d:67,desc:true},{s:13,d:95},{s:14,d:104},{s:15,d:114},{s:16,d:84,desc:true},{s:17,d:120,milestone:true},{s:18,d:120},{s:19,d:120},{s:20,d:84,desc:true},{s:21,d:120},{s:22,d:120},{s:23,d:120},{s:24,d:84,desc:true},{s:25,d:120},{s:26,d:120},{s:27,d:120},{s:28,d:84,desc:true},{s:29,d:120},{s:30,d:120},{s:31,d:120},{s:32,d:84,desc:true},{s:33,d:120},{s:34,d:120},{s:35,d:120},{s:36,d:84,desc:true}];
-// Prescrição por dia da semana (0=Dom, 1=Seg … 6=Sáb)
-const WEEK_PRES={1:{label:'Seg',zone:'Z2',fcLo:109,fcHi:127,distMin:17,distMax:24,rest:false,type:'commute'},2:{label:'Ter',zone:'Z3',fcLo:127,fcHi:146,distMin:17,distMax:24,rest:false,type:'commute'},3:{label:'Qua',zone:null,fcLo:0,fcHi:999,distMin:0,distMax:0,rest:true,type:'force'},4:{label:'Qui',zone:'Z4',fcLo:146,fcHi:164,distMin:17,distMax:24,rest:false,type:'commute'},5:{label:'Sex',zone:'Z1',fcLo:91,fcHi:109,distMin:17,distMax:24,rest:false,type:'commute'},6:{label:'Sab',zone:'Z2',fcLo:109,fcHi:132,distMin:40,distMax:125,rest:false,type:'longa'},0:{label:'Dom',zone:null,fcLo:0,fcHi:999,distMin:0,distMax:0,rest:true,type:'rest'}};
-</script>
 
-<div class="shell">
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <div class="sidebar-header">
-    <div class="sidebar-logo">Hub de Treino</div>
-    <div class="sidebar-name">Victor</div>
-    <div class="sidebar-sub">CAAD10 · Trek FX · Sense React</div>
-    <button class="strava-badge" id="stravaBtn" onclick="handleStravaAuth()">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066z"/><path d="M9.979 9.816l-2.298-4.531L2.333 24h3.785z" opacity=".5"/></svg>
-      <span id="stravaBtnText">Conectar Strava</span>
-    </button>
-  </div>
-  <div class="nav-group">
-    <div class="nav-group-label">Acompanhamento</div>
-    <button class="nav-item active" onclick="sw('status',this)"><div class="nav-dot" style="background:#0b7a6e"></div>Status atual</button>
-    <button class="nav-item" onclick="sw('semana-atual',this)"><div class="nav-dot" style="background:#2d7a3a"></div>Semana atual</button>
-    <button class="nav-item" onclick="sw('alertas',this)"><div class="nav-dot" style="background:#c0332e"></div>Alertas &amp; correções</button>
-    <button class="nav-item" onclick="sw('evolucao',this)"><div class="nav-dot" style="background:#6b3fa0"></div>Evolução</button>
-    <button class="nav-item" onclick="sw('atividades',this)"><div class="nav-dot" style="background:#e8530a"></div>Atividades</button>
-    <button class="nav-item" onclick="sw('pmc',this)"><div class="nav-dot" style="background:#3d5a80"></div>PMC</button>
-  </div>
-  <div class="nav-group">
-    <div class="nav-group-label">Protocolos</div>
-    <button class="nav-item" onclick="sw('semana',this)"><div class="nav-dot" style="background:#3d5a80"></div>Semana tipo</button>
-    <button class="nav-item" onclick="sw('zonas',this)"><div class="nav-dot" style="background:#c0332e"></div>Zonas de FC</button>
-    <button class="nav-item" onclick="sw('velocidade',this)"><div class="nav-dot" style="background:#c47c0a"></div>Velocidade</button>
-    <button class="nav-item" onclick="sw('cadencia',this)"><div class="nav-dot" style="background:#3d5a80"></div>Cadência</button>
-    <button class="nav-item" onclick="sw('fases',this)"><div class="nav-dot" style="background:#6b3fa0"></div>Fases — Gran Fondo</button>
-  </div>
-  <div class="nav-group">
-    <div class="nav-group-label">Nutrição</div>
-    <button class="nav-item" onclick="sw('nutricao',this)"><div class="nav-dot" style="background:#0b7a6e"></div>Por tipo de dia</button>
-    <button class="nav-item" onclick="sw('suplementos',this)"><div class="nav-dot" style="background:#c47c0a"></div>Suplementação</button>
-  </div>
-  <div class="sidebar-footer">
-    <div class="sync-row"><div class="sync-dot" id="syncDot"></div><span id="syncLabel">Aguardando Strava</span></div>
-    <div id="syncMeta">—</div>
-  </div>
+<div class="wrap" id="app">
+
+<!-- AUTH SCREEN -->
+<div id="screen-auth" class="auth">
+  <h2>Hub de Treino — Victor</h2>
+  <p>Conecte ao Strava para ver hoje/amanhã, semana atual, aderência e evolução desde o início do plano.</p>
+  <button class="btn-big" onclick="initStrava()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066z"/><path d="M9.979 9.816l-2.298-4.531L2.333 24h3.785z" opacity=".5"/><path d="M13.068 5.285L10.333 0 7.6 5.285z" opacity=".5"/></svg>
+    Conectar Strava
+  </button>
+</div>
+
+<!-- LOADING SCREEN -->
+<div id="screen-loading" class="auth hidden">
+  <div class="loader"></div>
+  <div class="loading-detail" id="loading-text">Carregando atividades…</div>
 </div>
 
 <!-- MAIN -->
-<div class="main">
+<div id="screen-main" class="hidden">
 
-<!-- STATUS -->
-<div id="tab-status" class="panel active">
-  <div class="page-header"><div class="page-title">Status atual</div><div class="page-sub" id="statusDate">—</div></div>
-  <div class="plan-banner">
-    <div class="plan-banner-top">
-      <div><div class="plan-banner-title">🏔 Meta: Gran Fondo 120 km</div><div class="plan-banner-week" id="planWeekLabel">—</div></div>
-      <div style="text-align:right"><div style="font-family:var(--font-mono);font-size:10px;color:var(--ink3)">Recorde</div><div style="font-size:18px;font-weight:700;color:var(--plum)" id="mRecord">— km</div></div>
-    </div>
-    <div class="plan-progress-bar"><div class="plan-progress-fill" id="planProgressFill" style="width:0%"></div></div>
-    <div style="display:flex;justify-content:space-between;margin-top:5px;font-family:var(--font-mono);font-size:9px;color:var(--ink3)">
-      <span>Início Jun/25</span><span id="planSatTarget">Sáb: — km</span><span>120km · Sem 17</span>
-    </div>
-  </div>
-  <div class="mrow">
-    <div class="mc teal"><div class="ml">CTL — fitness</div><div class="mv" id="mCtl">—</div><div class="ms">meta 36 sem: 75</div></div>
-    <div class="mc gold"><div class="ml">TSB — forma</div><div class="mv" id="mTsb">—</div><div class="ms" id="mTsbSub">—</div></div>
-    <div class="mc teal"><div class="ml">EF aeróbico</div><div class="mv" id="mEf">—</div><div class="ms" id="mEfSub">vel/FC rides ≥15km</div></div>
-    <div class="mc teal"><div class="ml">FC média (30d)</div><div class="mv" id="mFc">—</div><div class="ms">bpm</div></div>
-    <div class="mc slate"><div class="ml">Vel. média (30d)</div><div class="mv" id="mVel">—</div><div class="ms">km/h</div></div>
-    <div class="mc plum"><div class="ml">Alertas ativos</div><div class="mv" id="mAlertas">—</div><div class="ms">ver painel alertas</div></div>
-  </div>
-  <div class="two">
-    <div><div class="sec">Distribuição de zonas (30d)</div><div class="ch" style="height:170px"><canvas id="zoneDonut"></canvas></div></div>
-    <div><div class="sec">FC média mensal</div><div class="ch" style="height:170px"><canvas id="fcTrendChart"></canvas></div></div>
-  </div>
-  <div class="sec">Volume semanal — últimas 12 semanas</div>
-  <div class="ch" style="height:150px"><canvas id="weeklyVolChart"></canvas></div>
-</div>
-
-<!-- SEMANA ATUAL -->
-<div id="tab-semana-atual" class="panel">
-  <div class="page-header"><div class="page-title">Semana atual</div><div class="page-sub">execução vs. prescrição</div></div>
-  <div id="semanaAtualBanner" style="margin-bottom:14px"></div>
-  <div class="card" id="semanaAtualCard"><div style="text-align:center;padding:20px;color:var(--ink3);font-size:11px">Conecte o Strava para ver execução da semana</div></div>
-  <div class="sec">Legenda</div>
-  <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--ink2)">
-    <span><span class="wstatus ok" style="display:inline-block;margin-right:5px;vertical-align:middle"></span>FC dentro da zona</span>
-    <span><span class="wstatus warn" style="display:inline-block;margin-right:5px;vertical-align:middle"></span>Ride feita, FC fora da zona</span>
-    <span><span class="wstatus bad" style="display:inline-block;margin-right:5px;vertical-align:middle"></span>Não realizado</span>
-    <span><span class="wstatus rest" style="display:inline-block;margin-right:5px;vertical-align:middle"></span>Descanso prescrito</span>
-    <span><span class="wstatus future" style="display:inline-block;margin-right:5px;vertical-align:middle"></span>Ainda não ocorreu</span>
-  </div>
-  <div class="sec">TSS acumulado esta semana</div>
-  <div class="ch" style="height:120px"><canvas id="tssSemanaDayChart"></canvas></div>
-</div>
-
-<!-- ALERTAS -->
-<div id="tab-alertas" class="panel">
-  <div class="page-header"><div class="page-title">Alertas &amp; correções</div><div class="page-sub">análise automática — últimas 4 semanas</div></div>
-  <div id="alertasList"><div style="text-align:center;padding:30px;color:var(--ink3);font-size:11px">Conecte o Strava para ver alertas</div></div>
-</div>
-
-<!-- EVOLUÇÃO -->
-<div id="tab-evolucao" class="panel">
-  <div class="page-header"><div class="page-title">Evolução</div><div class="page-sub">antes vs. depois do plano — corte Jun/25</div></div>
-  <div class="sec">Antes do plano vs. agora (rides ≥15km com FC)</div>
-  <div class="evo-compare" id="evoCompare"><div style="text-align:center;padding:20px;color:var(--ink3);font-size:11px;grid-column:1/-1">Conecte o Strava</div></div>
-  <div class="sec">Velocidade nas rides de sábado ≥30km</div>
-  <div class="ch" style="height:200px"><canvas id="satVelChart"></canvas></div>
-  <div class="two">
-    <div><div class="sec">EF aeróbico mensal</div><div class="ch" style="height:175px"><canvas id="efMonthChart"></canvas></div></div>
-    <div><div class="sec">FC média em rides ≥30km</div><div class="ch" style="height:175px"><canvas id="fcLongChart"></canvas></div></div>
-  </div>
-  <div class="sec">% Z2 mês a mês — meta: ≥45%</div>
-  <div class="ch" style="height:160px"><canvas id="z2TrendChart"></canvas></div>
-</div>
-
-<!-- ATIVIDADES -->
-<div id="tab-atividades" class="panel">
-  <div class="page-header"><div class="page-title">Atividades recentes</div><div class="page-sub">dados ao vivo · Strava API</div></div>
-  <div class="mrow">
-    <div class="mc orange"><div class="ml">Rides (30d)</div><div class="mv" id="aRides">—</div></div>
-    <div class="mc teal"><div class="ml">Distância (30d)</div><div class="mv" id="aDist">—</div><div class="ms">km</div></div>
-    <div class="mc gold"><div class="ml">TSS (30d)</div><div class="mv" id="aTss">—</div></div>
-    <div class="mc slate"><div class="ml">Elevação (30d)</div><div class="mv" id="aElev">—</div><div class="ms">m</div></div>
-  </div>
-  <div class="sec">Últimas 30 rides</div>
-  <div class="card" style="overflow-x:auto;padding:0">
-    <table class="act-table"><thead><tr><th>Data</th><th>Nome</th><th>Dist.</th><th>Vel.</th><th>FC</th><th>Zona</th><th>hrTSS</th><th>EF</th><th>Cad.</th></tr></thead>
-    <tbody id="actBody"><tr><td colspan="9" style="text-align:center;padding:20px;color:var(--ink3)">Conecte o Strava</td></tr></tbody></table>
-  </div>
-  <div class="sec">Dispersão: distância vs velocidade (rides ≥15km)</div>
-  <div class="ch" style="height:220px"><canvas id="scatterChart"></canvas></div>
-</div>
-
-<!-- PMC -->
-<div id="tab-pmc" class="panel">
-  <div class="page-header"><div class="page-title">PMC</div><div class="page-sub">CTL · ATL · TSB · hrTSS</div></div>
-  <div class="mrow">
-    <div class="mc slate"><div class="ml">CTL</div><div class="mv" id="pmcCtl">—</div><div class="ms">fitness 42d</div></div>
-    <div class="mc gold"><div class="ml">ATL</div><div class="mv" id="pmcAtl">—</div><div class="ms">fadiga 7d</div></div>
-    <div class="mc gold"><div class="ml">TSB</div><div class="mv" id="pmcTsb">—</div><div class="ms" id="pmcTsbSub">—</div></div>
-    <div class="mc teal"><div class="ml">TSS/semana</div><div class="mv" id="pmcWeekTss">—</div></div>
-  </div>
-  <div class="tip" id="pmcTip">Conecte o Strava para calcular PMC.</div>
-  <div class="sec">PMC — últimas 16 semanas</div>
-  <div class="ch" style="height:240px"><canvas id="pmcChart"></canvas></div>
-  <div class="two">
+  <div class="header">
     <div>
-      <div class="sec">Referências CTL</div>
-      <div class="card">
-        <div class="trow"><span class="tk">Iniciante</span><span class="tv">CTL 10–25</span></div>
-        <div class="trow"><span class="tk">Recreativo</span><span class="tv">CTL 25–45</span></div>
-        <div class="trow hl"><span class="tk"><strong>Você</strong></span><span class="tv" style="color:var(--slate)" id="pmcRef">—</span></div>
-        <div class="trow"><span class="tk">Amador treinado</span><span class="tv">CTL 50–70</span></div>
-        <div class="trow"><span class="tk">Amador competitivo</span><span class="tv">CTL 70–100</span></div>
+      <div class="h-title">Hub de Treino</div>
+      <div class="h-sub" id="planMeta">—</div>
+    </div>
+    <div class="h-right">
+      <div class="sync">
+        <div class="sync-dot ok" id="syncDot"></div>
+        <span id="syncLabel">conectado</span>
       </div>
+      <button class="btn-strava connected" onclick="logout()">desconectar</button>
     </div>
-    <div><div class="sec">TSS semanal — 16 semanas</div><div class="ch" style="height:185px"><canvas id="tssWeeklyChart"></canvas></div></div>
   </div>
+
+  <!-- BLOCO 1 -->
+  <div class="block">
+    <div class="block-head">
+      <div class="block-title">Hoje · amanhã</div>
+      <div class="block-meta" id="b1Meta">—</div>
+    </div>
+    <div class="today-grid">
+      <div id="cardToday" class="day-card primary"></div>
+      <div id="cardTomorrow" class="day-card rest"></div>
+    </div>
+  </div>
+
+  <!-- BLOCO 2 -->
+  <div class="block">
+    <div class="block-head">
+      <div class="block-title">Semana atual</div>
+      <div class="block-meta" id="b2Meta">—</div>
+    </div>
+    <div class="week-grid" id="weekGrid"></div>
+    <div class="week-note" id="weekNote"></div>
+  </div>
+
+  <!-- BLOCO 3 -->
+  <div class="block">
+    <div class="block-head">
+      <div class="block-title">Aderência · últimas 4 semanas</div>
+      <div class="block-meta">% dias prescritos cumpridos (verde)</div>
+    </div>
+    <div class="adh-grid" id="adhGrid"></div>
+  </div>
+
+  <!-- BLOCO 4 -->
+  <div class="block">
+    <div class="block-head">
+      <div class="block-title">Evolução desde 02/jun/2025</div>
+      <div class="block-meta">rides ≥15km · antes vs depois do plano</div>
+    </div>
+    <div class="evo-grid" id="evoGrid"></div>
+  </div>
+
+  <!-- BLOCO 5 -->
+  <div class="block">
+    <div class="block-head">
+      <div class="block-title">Plano 36 semanas</div>
+      <div class="block-meta" id="b5Meta">—</div>
+    </div>
+    <div id="planTable"></div>
+    <button class="plan-toggle" id="planToggleBtn" onclick="togglePlan()">ver todas as 36 semanas</button>
+  </div>
+
+  <!-- BLOCO 6 -->
+  <div class="block">
+    <button class="hist-toggle" id="histToggleBtn" onclick="toggleHist()">
+      <span class="hist-arrow">▸</span>
+      <span>Histórico — últimas 30 rides</span>
+    </button>
+    <div class="hist-body" id="histBody">
+      <table class="act-table">
+        <thead>
+          <tr><th>Data</th><th>Nome</th><th>Dist</th><th>Vel</th><th>FC</th><th>Dur</th></tr>
+        </thead>
+        <tbody id="histRows"></tbody>
+      </table>
+    </div>
+  </div>
+
 </div>
 
-<!-- SEMANA TIPO -->
-<div id="tab-semana" class="panel">
-  <div class="page-header"><div class="page-title">Semana tipo</div><div class="page-sub">folga na quarta</div></div>
-  <div class="card">
-    <div class="dayrow" style="opacity:.35;font-family:var(--font-mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink3)"><span>Dia</span><span>Tipo</span><span>Prescrição</span></div>
-    <div class="dayrow"><div class="dn">Seg</div><div><span class="badge bz2">Z2 leve</span></div><div class="dd">Trek commute 17–20km ida em Z2 (FC 109–127). Volta 6km livre.</div></div>
-    <div class="dayrow"><div class="dn">Ter</div><div><span class="badge bz3">Z3</span></div><div class="dd">Trek commute ida com 2×8min em Z3 (FC 127–146). Volta livre.</div></div>
-    <div class="dayrow rest"><div class="dn">Qua</div><div><span class="badge bok">Força</span></div><div class="dd">Sem commute. Musculação: core, posterior, glúteo, quadríceps.</div></div>
-    <div class="dayrow"><div class="dn">Qui</div><div><span class="badge bz4">Z4</span></div><div class="dd">Trek commute ida com 1×12min em Z4 (FC 146–158). Volta Z1 obrigatório.</div></div>
-    <div class="dayrow"><div class="dn">Sex</div><div><span class="badge bz1">Z1</span></div><div class="dd">Trek commute em Z1 (FC &lt;109). Ritmo conversa. Buffer crítico antes do sábado.</div></div>
-    <div class="dayrow"><div class="dn">Sáb</div><div><span class="badge bpur">CAAD10</span></div><div class="dd">Ride longa CAAD10 em Z2 (FC 109–127). Distância conforme semana do plano.</div></div>
-    <div class="dayrow rest"><div class="dn">Dom</div><div><span class="badge bgr">Descanso</span></div><div class="dd">Descanso total. Sem bike.</div></div>
-  </div>
-  <div class="sec">TSS estimado por dia</div>
-  <div class="ch" style="height:145px"><canvas id="tssDayChart"></canvas></div>
 </div>
-
-<!-- ZONAS -->
-<div id="tab-zonas" class="panel">
-  <div class="page-header"><div class="page-title">Zonas de FC</div><div class="page-sub">FCmáx 182 · LTHR 164 bpm</div></div>
-  <div class="card">
-    <div class="zone-grid" style="font-family:var(--font-mono);font-size:9px;color:var(--ink3);opacity:.6"><span>Zona</span><span>FC (bpm)</span><span>% FCmáx</span><span>Uso</span></div>
-    <div class="zone-grid"><span class="badge bz1">Z1</span><span>91–109</span><span>50–60%</span><span style="color:var(--ink2)">Volta diária, sex, dom</span></div>
-    <div class="zone-grid hl"><span class="badge bz2">Z2</span><span>109–127</span><span>60–70%</span><span><strong>Sábado inteiro — base do gran fondo</strong></span></div>
-    <div class="zone-grid"><span class="badge bz3">Z3</span><span>127–146</span><span>70–80%</span><span style="color:var(--ink2)">Ter (2×8min embutidos)</span></div>
-    <div class="zone-grid hl"><span class="badge bz4">Z4</span><span>146–164</span><span>80–90%</span><span><strong>Qui — 1 bloco/semana (12–20min)</strong></span></div>
-    <div class="zone-grid"><span class="badge bpur" style="font-size:9px">Z5</span><span>164–182</span><span>90–100%</span><span style="color:var(--ink2)">Não prescrito</span></div>
-  </div>
-  <div class="tip w">Para aguentar 120km, Z2 precisa ser dominante. 6–7h em Z3 é insustentável.</div>
-  <div class="sec">Atual vs. prescrito (30d)</div>
-  <div class="ch" style="height:185px"><canvas id="zoneCompChart"></canvas></div>
-  <div class="sec">Evolução mensal de zonas</div>
-  <div class="ch" style="height:185px"><canvas id="zoneEvolChart"></canvas></div>
-  <div class="tip g" id="zoneTip">Conecte o Strava.</div>
-</div>
-
-<!-- VELOCIDADE -->
-<div id="tab-velocidade" class="panel">
-  <div class="page-header"><div class="page-title">Protocolo de velocidade</div><div class="page-sub">36 semanas · meta gran fondo</div></div>
-  <div id="velPlanBanner" style="margin-bottom:14px"></div>
-  <div class="mrow">
-    <div class="mc"><div class="ml">Vel. rides longas (30d)</div><div class="mv" id="velAtual">—</div><div class="ms">rides ≥20km</div></div>
-    <div class="mc slate"><div class="ml">Meta fase 1</div><div class="mv">21–23 km/h</div><div class="ms">87km em Z2</div></div>
-    <div class="mc gold"><div class="ml">Meta fase 2</div><div class="mv">22–24 km/h</div><div class="ms">120km 1ª vez</div></div>
-    <div class="mc teal"><div class="ml">Meta fase 3</div><div class="mv">23–25 km/h</div><div class="ms">120km consistente</div></div>
-  </div>
-  <div class="tip or">Gran fondo: prioridade é distância em Z2. 120km @ 23km/h = ~5h20 de sela.</div>
-  <div class="sec">Progressão — 36 semanas (barra verde = semana atual)</div>
-  <div class="ch" style="height:200px"><canvas id="progGeralChart"></canvas></div>
-  <div class="sec">Fase 1 — detalhamento (sem 1–12)</div>
-  <div class="card prog-wrap" id="fase1Table"></div>
-</div>
-
-<!-- CADÊNCIA -->
-<div id="tab-cadencia" class="panel">
-  <div class="page-header"><div class="page-title">Protocolo de cadência</div><div class="page-sub">meta 85–95 rpm</div></div>
-  <div class="mrow">
-    <div class="mc slate"><div class="ml">Alvo Z2 (sábado)</div><div class="mv">85–90</div><div class="ms">rpm</div></div>
-    <div class="mc"><div class="ml">Alvo Z4 (quinta)</div><div class="mv">90–95</div><div class="ms">rpm</div></div>
-    <div class="mc gold"><div class="ml">Commute Trek</div><div class="mv">80–85</div><div class="ms">rpm</div></div>
-    <div class="mc plum"><div class="ml">Cadência média (30d)</div><div class="mv" id="cadAtual">—</div><div class="ms">rpm · Strava</div></div>
-  </div>
-  <div class="tip r">120km ≈ 30.000 pedaladas. Cadência &lt;75rpm queima quadríceps nas primeiras 2h — colapso garantido nos km 80–100.</div>
-  <div class="two">
-    <div>
-      <div class="sec">Referências</div>
-      <div class="card">
-        <div class="trow"><span class="tk">&lt;75 rpm</span><span class="tv" style="color:var(--crimson)">↑ fadiga muscular precoce</span></div>
-        <div class="trow"><span class="tk">85–95 rpm</span><span class="tv" style="color:var(--teal)">↓ carga · ↑ eficiência</span></div>
-        <div class="trow"><span class="tk">&gt;100 rpm</span><span class="tv" style="color:var(--gold)">↑ demanda cardiovascular</span></div>
-      </div>
-    </div>
-    <div>
-      <div class="sec">Calibrar sem computador</div>
-      <div class="card">
-        <div class="trow"><span class="tk">Método</span><span class="tv">1 perna em 15s × 4</span></div>
-        <div class="trow"><span class="tk">85 rpm</span><span class="tv">21–22 por 15s</span></div>
-        <div class="trow"><span class="tk">90 rpm</span><span class="tv">22–23 por 15s</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="sec">Progressão de cadência — 12 semanas</div>
-  <div class="ch" style="height:150px"><canvas id="cadChart"></canvas></div>
-  <div class="tip w">Cycplus C3 sem registro correto no XOSS. Resolver antes da semana 9. Alternativa: Magene S3+.</div>
-</div>
-
-<!-- FASES -->
-<div id="tab-fases" class="panel">
-  <div class="page-header"><div class="page-title">Fases — Gran Fondo 120km</div><div class="page-sub">36 semanas · 3 fases</div></div>
-  <div class="tgl">
-    <button class="tbtn active" onclick="setFase('f1',this)">Fase 1 — Base (sem 1–12)</button>
-    <button class="tbtn" onclick="setFase('f2',this)">Fase 2 — Construção (sem 13–20)</button>
-    <button class="tbtn" onclick="setFase('f3',this)">Fase 3 — Consolidação (sem 21–36)</button>
-  </div>
-  <div id="fase-f1">
-    <div class="phase-card" style="border-color:rgba(61,90,128,.25);background:rgba(61,90,128,.04)">
-      <div class="ph" style="color:var(--slate)">Fase 1 — Base aeróbica · Semanas 1–12</div>
-      <div class="pd">Objetivo: 87km em Z2 puro. De 42→87km (+107%). +10%/semana, descarga a cada 4ª semana. FC importa mais que velocidade.</div>
-    </div>
-    <div class="sec">Sábados</div>
-    <div class="card prog-wrap" id="f1Table"></div>
-    <div class="sec">Sábado — execução CAAD10</div>
-    <div class="card">
-      <div class="trow"><span class="tk">FC alvo</span><span class="tv" style="color:var(--slate)">109–127 bpm (Z2 rígido)</span></div>
-      <div class="trow"><span class="tk">Regra absoluta</span><span class="tv">FC &gt;127 por 3min → reduz marcha</span></div>
-      <div class="trow"><span class="tk">Cadência</span><span class="tv">85–90 rpm o tempo todo</span></div>
-      <div class="trow"><span class="tk">Alimentação (≥60km)</span><span class="tv">banana/gel a cada 35min após km 40</span></div>
-    </div>
-    <div class="sec">Qui — Z4 progressão</div>
-    <div class="card">
-      <div class="trow"><span class="tk">Sem 1–4</span><span class="tv">1×12min Z4 (FC 146–158)</span></div>
-      <div class="trow"><span class="tk">Sem 5–8</span><span class="tv">1×15min Z4 (FC 148–160)</span></div>
-      <div class="trow"><span class="tk">Sem 9–12</span><span class="tv">1×18–20min Z4 (FC 150–162)</span></div>
-    </div>
-    <div class="sec">Critério de conclusão</div>
-    <div class="card">
-      <div class="trow"><span class="tk">Distância</span><span class="tv">87km completos (sem 11)</span></div>
-      <div class="trow"><span class="tk">FC média</span><span class="tv">&lt;128 bpm durante toda a ride</span></div>
-      <div class="trow"><span class="tk">Sensação</span><span class="tv">"daria para continuar mais 15–20km"</span></div>
-    </div>
-    <div class="tip g">Adaptação (sem 6–8): velocidade de conversa +1–2 km/h; FC nas subidas 5–8 bpm menor.</div>
-  </div>
-  <div id="fase-f2" style="display:none">
-    <div class="phase-card" style="border-color:rgba(196,124,10,.25);background:rgba(196,124,10,.04)">
-      <div class="ph" style="color:var(--gold)">Fase 2 — Construção · Semanas 13–20</div>
-      <div class="pd">Objetivo: completar 120km pela primeira vez (semana 17). Não importa a velocidade, importa chegar.</div>
-    </div>
-    <div class="sec">Sábados</div>
-    <div class="card prog-wrap" id="f2Table"></div>
-    <div class="sec">Protocolo nutricional 120km</div>
-    <div class="card">
-      <div class="trow"><span class="tk">Sex à noite</span><span class="tv">carb-loading — massa, arroz ou batata</span></div>
-      <div class="trow"><span class="tk">Café pré-ride</span><span class="tv">600 kcal, 2h antes — aveia 90g + 2 bananas + mel</span></div>
-      <div class="trow"><span class="tk">Em campo</span><span class="tv">60–90g CHO/hora — gel/banana a cada 25–30min</span></div>
-    </div>
-    <div class="tip w">O "muro" no km 85–95 é subalimentação nas primeiras 3h. Comer antes de ter fome.</div>
-  </div>
-  <div id="fase-f3" style="display:none">
-    <div class="phase-card" style="border-color:rgba(11,122,110,.25);background:rgba(11,122,110,.04)">
-      <div class="ph" style="color:var(--teal)">Fase 3 — Consolidação · Semanas 21–36</div>
-      <div class="pd">Objetivo: 120km confortáveis e repetíveis. FC média abaixo de 120, sem crise.</div>
-    </div>
-    <div class="sec">Sábados</div>
-    <div class="card prog-wrap" id="f3Table"></div>
-    <div class="sec">Marcadores de evolução</div>
-    <div class="card">
-      <div class="trow"><span class="tk">Sem 21–24</span><span class="tv">FC 128–132 — ainda forçado</span></div>
-      <div class="trow"><span class="tk">Sem 25–28</span><span class="tv">FC 124–128 — confortável</span></div>
-      <div class="trow"><span class="tk">Sem 29–32</span><span class="tv">FC 120–124 — econômico</span></div>
-      <div class="trow"><span class="tk">Sem 33–36</span><span class="tv">FC &lt;120 — gran fondo concluído</span></div>
-    </div>
-    <div class="tip g">CTL 75 + 120km em Z2 = top 15–20% amadores brasileiros ativos.</div>
-  </div>
-</div>
-
-<!-- NUTRIÇÃO -->
-<div id="tab-nutricao" class="panel">
-  <div class="page-header"><div class="page-title">Nutrição por tipo de dia</div><div class="page-sub">70 kg · 2,0–2,2g prot/kg</div></div>
-  <div class="tgl">
-    <button class="tbtn active" onclick="setDia('commute',this)">Seg/Ter/Qui</button>
-    <button class="tbtn" onclick="setDia('forca',this)">Qua (força)</button>
-    <button class="tbtn" onclick="setDia('leve',this)">Sex (Z1)</button>
-    <button class="tbtn" onclick="setDia('longa',this)">Sáb (até 80km)</button>
-    <button class="tbtn" onclick="setDia('gf',this)">Sáb 120km</button>
-    <button class="tbtn" onclick="setDia('descanso',this)">Dom</button>
-  </div>
-  <div id="dia-commute">
-    <div class="mrow"><div class="mc slate"><div class="ml">Total</div><div class="mv">2.550</div><div class="ms">kcal</div></div><div class="mc"><div class="ml">Proteína</div><div class="mv">145–155g</div></div><div class="mc"><div class="ml">Carboidrato</div><div class="mv">295–325g</div></div><div class="mc"><div class="ml">Gordura</div><div class="mv">70–80g</div></div></div>
-    <div class="card">
-      <div class="refeicao"><span class="rh">06:00</span><span class="ri"><strong>Café pré-pedal</strong> — aveia 60g + banana + mel.</span><span class="rk2">~380</span></div>
-      <div class="refeicao"><span class="rh">08:00</span><span class="ri"><strong>Lanche chegada</strong> — iogurte grego + granola. Janela 30min.</span><span class="rk2">~280</span></div>
-      <div class="refeicao"><span class="rh">12:00</span><span class="ri"><strong>Almoço</strong> — proteína 150g + arroz 150g + leguminosa.</span><span class="rk2">~650</span></div>
-      <div class="refeicao"><span class="rh">15:30</span><span class="ri"><strong>Lanche tarde</strong> — fruta + pasta de amendoim.</span><span class="rk2">~250</span></div>
-      <div class="refeicao"><span class="rh">17:30</span><span class="ri"><strong>Pré-volta</strong> — banana. Leve, só para os 6km.</span><span class="rk2">~120</span></div>
-      <div class="refeicao"><span class="rh">19:30</span><span class="ri"><strong>Jantar</strong> — proteína + carboidrato complexo + legume.</span><span class="rk2">~650</span></div>
-      <div class="refeicao"><span class="rh">22:00</span><span class="ri"><strong>Whey noturno</strong> — 30g.</span><span class="rk2">~150</span></div>
-    </div>
-  </div>
-  <div id="dia-forca" style="display:none">
-    <div class="mrow"><div class="mc"><div class="ml">Total</div><div class="mv">2.250</div><div class="ms">kcal</div></div><div class="mc"><div class="ml">Proteína</div><div class="mv">145–155g</div></div><div class="mc"><div class="ml">CHO</div><div class="mv">240–270g</div></div><div class="mc"><div class="ml">Gordura</div><div class="mv">72–82g</div></div></div>
-    <div class="card">
-      <div class="refeicao"><span class="rh">Pré-força</span><span class="ri"><strong>CHO + proteína</strong> 60–90min antes.</span><span class="rk2">~300</span></div>
-      <div class="refeicao"><span class="rh">Pós-força</span><span class="ri"><strong>Janela 30min</strong> — 30g whey + banana.</span><span class="rk2">~350</span></div>
-      <div class="refeicao"><span class="rh">12:00</span><span class="ri"><strong>Almoço</strong> — proteína 150g + arroz 130g.</span><span class="rk2">~650</span></div>
-      <div class="refeicao"><span class="rh">20:00</span><span class="ri"><strong>Jantar</strong> — proteína + vegetais + gordura boa.</span><span class="rk2">~650</span></div>
-    </div>
-    <div class="tip g">Creatina 5g pós-almoço. Único dia sem demanda aeróbica.</div>
-  </div>
-  <div id="dia-leve" style="display:none">
-    <div class="mrow"><div class="mc"><div class="ml">Total</div><div class="mv">2.350</div><div class="ms">kcal</div></div><div class="mc"><div class="ml">Proteína</div><div class="mv">140–150g</div></div><div class="mc"><div class="ml">CHO</div><div class="mv">250–280g</div></div><div class="mc"><div class="ml">Gordura</div><div class="mv">70–80g</div></div></div>
-    <div class="card">
-      <div class="refeicao"><span class="rh">06:00</span><span class="ri"><strong>Café pré-pedal</strong> — aveia 50g + banana. Leve.</span><span class="rk2">~320</span></div>
-      <div class="refeicao"><span class="rh">12:00</span><span class="ri"><strong>Almoço</strong> — proteína 140g + arroz 130g.</span><span class="rk2">~600</span></div>
-      <div class="refeicao"><span class="rh">19:30</span><span class="ri"><strong>Jantar leve</strong> — proteína + vegetais. CHO reduzido.</span><span class="rk2">~600</span></div>
-      <div class="refeicao"><span class="rh">22:00</span><span class="ri"><strong>Whey noturno</strong> — 30g.</span><span class="rk2">~150</span></div>
-    </div>
-    <div class="tip">Semanas de 120km: considerar sexta sem commute.</div>
-  </div>
-  <div id="dia-longa" style="display:none">
-    <div class="mrow"><div class="mc teal"><div class="ml">Total</div><div class="mv">3.100</div><div class="ms">kcal</div></div><div class="mc teal"><div class="ml">CHO</div><div class="mv">380–420g</div></div><div class="mc"><div class="ml">Em campo</div><div class="mv">~200/h</div><div class="ms">após km 40</div></div></div>
-    <div class="card">
-      <div class="refeicao"><span class="rh">06:30</span><span class="ri"><strong>Café pré-ride</strong> — aveia 80g + banana + mel. 90–120min antes.</span><span class="rk2">~480</span></div>
-      <div class="refeicao"><span class="rh">Na bike</span><span class="ri"><strong>Fueling</strong> — banana/gel a cada 35min após km 40.</span><span class="rk2">~200/h</span></div>
-      <div class="refeicao"><span class="rh">Pós-ride</span><span class="ri"><strong>Janela 30min</strong> — whey 30g + banana.</span><span class="rk2">~350</span></div>
-      <div class="refeicao"><span class="rh">12:30</span><span class="ri"><strong>Almoço reforçado</strong> — proteína 180g + arroz 200g.</span><span class="rk2">~850</span></div>
-    </div>
-  </div>
-  <div id="dia-gf" style="display:none">
-    <div class="mrow"><div class="mc orange"><div class="ml">Total</div><div class="mv">3.800+</div></div><div class="mc orange"><div class="ml">CHO</div><div class="mv">480–550g</div></div><div class="mc orange"><div class="ml">Em campo</div><div class="mv">60–90g/h</div><div class="ms">CHO puro</div></div></div>
-    <div class="card">
-      <div class="refeicao"><span class="rh">Sex noite</span><span class="ri"><strong>Carb-loading</strong> — massa, arroz ou batata.</span><span class="rk2">~900</span></div>
-      <div class="refeicao"><span class="rh">06:00</span><span class="ri"><strong>Café pré-ride</strong> — aveia 90g + 2 bananas + mel + café. 2h antes.</span><span class="rk2">~600</span></div>
-      <div class="refeicao"><span class="rh">km 40–120</span><span class="ri"><strong>Fueling contínuo</strong> — gel/banana a cada 25–30min. Eletrólito em cada garrafa.</span><span class="rk2">~200/h</span></div>
-      <div class="refeicao"><span class="rh">km 80</span><span class="ri"><strong>Gel com cafeína</strong> (50–80mg) — ajuda nos últimos 40km.</span><span class="rk2">~100</span></div>
-      <div class="refeicao"><span class="rh">Pós-ride</span><span class="ri"><strong>Janela 30min</strong> — whey 40g + banana + leite.</span><span class="rk2">~450</span></div>
-    </div>
-    <div class="tip r">Comer antes de ter fome. O "muro" no km 85–95 é subalimentação nas primeiras 3h.</div>
-  </div>
-  <div id="dia-descanso" style="display:none">
-    <div class="mrow"><div class="mc"><div class="ml">Total</div><div class="mv">2.100</div><div class="ms">kcal</div></div><div class="mc"><div class="ml">Proteína</div><div class="mv">140–150g</div></div><div class="mc"><div class="ml">CHO</div><div class="mv">210–240g</div><div class="ms">mínimo</div></div></div>
-    <div class="card">
-      <div class="refeicao"><span class="rh">08:00</span><span class="ri"><strong>Café manhã</strong> — ovos + aveia + fruta.</span><span class="rk2">~380</span></div>
-      <div class="refeicao"><span class="rh">12:00</span><span class="ri"><strong>Almoço</strong> — proteína 150g + arroz 120g + leguminosa.</span><span class="rk2">~650</span></div>
-      <div class="refeicao"><span class="rh">20:00</span><span class="ri"><strong>Jantar</strong> — proteína + vegetais + gordura boa.</span><span class="rk2">~650</span></div>
-      <div class="refeicao"><span class="rh">22:00</span><span class="ri"><strong>Whey noturno</strong> — 30g.</span><span class="rk2">~150</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- SUPLEMENTOS -->
-<div id="tab-suplementos" class="panel">
-  <div class="page-header"><div class="page-title">Suplementação</div><div class="page-sub">exames ago/2025</div></div>
-  <div class="mrow">
-    <div class="mc slate"><div class="ml">B12 sérica</div><div class="mv">460 pg/mL</div><div class="ms">marginal</div></div>
-    <div class="mc teal"><div class="ml">Ferritina</div><div class="mv">110 ng/mL</div><div class="ms">monitorar</div></div>
-    <div class="mc teal"><div class="ml">Vitamina D</div><div class="mv">38 ng/mL</div><div class="ms">ok</div></div>
-    <div class="mc teal"><div class="ml">Glicemia</div><div class="mv">92 mg/dL</div><div class="ms">ok</div></div>
-  </div>
-  <div class="card">
-    <div class="supl"><div class="sn">Creatina monoidratada<span>5g / dia — todo dia</span></div><div class="sd">Pós-almoço. Não suspender nas rides longas.</div></div>
-    <div class="supl"><div class="sn">B12 Metilcobalamina<span>2.000mcg — 1×/semana</span></div><div class="sd">Segunda, manhã, em jejum. Sublingual.</div></div>
-    <div class="supl"><div class="sn">Metilfolato<span>400mcg — 1×/semana</span></div><div class="sd">Junto com B12 na segunda.</div></div>
-    <div class="supl"><div class="sn">Whey protein<span>30g úteis / 40g 120km</span></div><div class="sd">Dias úteis: 22h. Sáb: 30min após chegada. Qua: pós-musculação imediato.</div></div>
-    <div class="supl"><div class="sn">Magnésio glicinato<span>200–300mg noturno</span></div><div class="sd">1h antes de dormir. Melhor biodisponibilidade.</div></div>
-    <div class="supl"><div class="sn">Eletrólitos (Na⁺/K⁺)<span>rides ≥45min · obrigatório ≥2h</span></div><div class="sd">Caseiro: 500ml + ¼ col. sal + limão. ≥90km: sachê comercial/hora.</div></div>
-  </div>
-  <div class="tip w">Próximo check-up: testosterona livre/total, repetir ferritina, PSA.</div>
-  <div class="sec">Calendário semanal</div>
-  <div class="ch" style="height:170px"><canvas id="suplChart"></canvas></div>
-</div>
-
-</div><!-- /main -->
-</div><!-- /shell -->
 
 <script>
-/* ── OAuth ── */
-let tokens=JSON.parse(localStorage.getItem('strava_tokens')||'null');
-let allActivities=[];
+/* ═══════════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════════ */
+const STRAVA_CONFIG = {
+  client_id:     '252938',
+  client_secret: '18ef194f9f2f44b69cc9e83557c17fc3719d7930',
+  redirect_uri:  'https://vgfalcao.github.io/granfondo/',
+  scope:         'activity:read_all'
+};
 
-function handleStravaAuth(){if(tokens){logout();return;}const p=new URLSearchParams({client_id:STRAVA_CONFIG.client_id,redirect_uri:STRAVA_CONFIG.redirect_uri,response_type:'code',approval_prompt:'auto',scope:STRAVA_CONFIG.scope});window.location.href='https://www.strava.com/oauth/authorize?'+p}
-async function exchangeCode(code){setSS('loading','Autenticando...');const r=await fetch('https://www.strava.com/oauth/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({client_id:STRAVA_CONFIG.client_id,client_secret:STRAVA_CONFIG.client_secret,code,grant_type:'authorization_code'})});const d=await r.json();if(d.access_token){tokens={access_token:d.access_token,refresh_token:d.refresh_token,expires_at:d.expires_at,athlete:d.athlete};localStorage.setItem('strava_tokens',JSON.stringify(tokens));window.history.replaceState({},'',window.location.pathname);await loadData();}else setSS('error','Erro na autenticação')}
-async function refreshToken(){const r=await fetch('https://www.strava.com/oauth/token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({client_id:STRAVA_CONFIG.client_id,client_secret:STRAVA_CONFIG.client_secret,refresh_token:tokens.refresh_token,grant_type:'refresh_token'})});const d=await r.json();if(d.access_token){tokens.access_token=d.access_token;tokens.refresh_token=d.refresh_token;tokens.expires_at=d.expires_at;localStorage.setItem('strava_tokens',JSON.stringify(tokens))}}
-async function getToken(){if(!tokens)return null;if(Date.now()/1000>tokens.expires_at-300)await refreshToken();return tokens.access_token}
-async function fetchActivities(pp=200,pg=3){const t=await getToken();if(!t)return[];const all=[];for(let p=1;p<=pg;p++){const r=await fetch('https://www.strava.com/api/v3/athlete/activities?per_page='+pp+'&page='+p,{headers:{Authorization:'Bearer '+t}});const d=await r.json();if(!Array.isArray(d)||!d.length)break;all.push(...d);if(d.length<pp)break}return all.filter(a=>a.type==='Ride'||a.sport_type==='Ride')}
-function logout(){tokens=null;localStorage.removeItem('strava_tokens');allActivities=[];document.getElementById('stravaBtnText').textContent='Conectar Strava';document.getElementById('stravaBtn').classList.remove('connected');setSS('idle','Desconectado')}
-function setSS(state,label){const dot=document.getElementById('syncDot');dot.className='sync-dot'+(state==='loading'?' loading':state==='error'?' error':'');document.getElementById('syncLabel').textContent=label}
+const PLAN_START_DATE = '2025-06-02'; // segunda-feira
+const FC_MAX  = 182;
+const LTHR    = 164;
 
-/* ── Plan week ── */
-function getPlanWeek(){const s=new Date(PLAN_START_DATE),n=new Date();return Math.max(1,Math.min(Math.floor((n-s)/864e5/7)+1,36))}
-function getPlanPhase(w){return w<=12?{num:1,label:'Base',c:'var(--slate)'}:w<=20?{num:2,label:'Construção',c:'var(--gold)'}:{num:3,label:'Consolidação',c:'var(--teal)'}}
+// Distância prescrita por semana (sábado)
+const GF_PLAN = [
+  {s:1,d:42},{s:2,d:46},{s:3,d:50},{s:4,d:39,desc:true},
+  {s:5,d:55},{s:6,d:60},{s:7,d:66},{s:8,d:51,desc:true},
+  {s:9,d:72},{s:10,d:79},{s:11,d:87},{s:12,d:67,desc:true},
+  {s:13,d:95},{s:14,d:104},{s:15,d:114},{s:16,d:84,desc:true},
+  {s:17,d:120,milestone:true},{s:18,d:120},{s:19,d:120},{s:20,d:84,desc:true},
+  {s:21,d:120},{s:22,d:120},{s:23,d:120},{s:24,d:84,desc:true},
+  {s:25,d:120},{s:26,d:120},{s:27,d:120},{s:28,d:84,desc:true},
+  {s:29,d:120},{s:30,d:120},{s:31,d:120},{s:32,d:84,desc:true},
+  {s:33,d:120},{s:34,d:120},{s:35,d:120},{s:36,d:84,desc:true},
+];
 
-function renderPlanBanners(){
-  const w=getPlanWeek(),wd=GF_PLAN[w-1],ph=getPlanPhase(w),pct=Math.round(w/36*100);
-  const lbl='Semana '+w+' de 36 · Fase '+ph.num+' — '+ph.label;
-  el('planWeekLabel').textContent=lbl;
-  el('planProgressFill').style.width=pct+'%';
-  el('planSatTarget').textContent='Sáb: '+wd.d+'km'+(wd.desc?' (descarga)':wd.milestone?' 🏔':'');
-  const mkr='<div class="week-marker"><span class="week-marker-num">S'+w+'</span><span class="week-marker-label">Semana '+w+' de 36 · Fase '+ph.num+' '+ph.label+' · Meta sábado: <strong>'+wd.d+'km</strong>'+(wd.desc?' (descarga)':'')+'</span></div>';
-  ['velPlanBanner','semanaAtualBanner'].forEach(id=>{const e=el(id);if(e)e.innerHTML=mkr});
+// Prescrição diária (dow: 1=seg, 0=dom)
+// kind: 'ride' | 'force' | 'rest'
+// block: { zone, minMinutes } — bloco contínuo embutido (opcional)
+// fcAvgRange: range de FC média aceitável
+const WEEKLY_RX = {
+  1: { dow:1, code:'SEG', kind:'ride',  minDist:17, durMin:45, fcAvgRange:[100,127], label:'Z2 commute' },
+  2: { dow:2, code:'TER', kind:'ride',  minDist:17, durMin:45, fcAvgRange:[100,140], block:{lo:127,hi:146,minMin:8}, label:'Z3 embutido' },
+  3: { dow:3, code:'QUA', kind:'force', durMin:20, label:'Força' },
+  4: { dow:4, code:'QUI', kind:'ride',  minDist:17, durMin:45, fcAvgRange:[100,150], block:{lo:146,hi:164,minMin:12}, label:'Z4 embutido' },
+  5: { dow:5, code:'SEX', kind:'ride',  minDist:6,  fcAvgRange:[0,115], label:'Z1 recuperação' },
+  6: { dow:6, code:'SAB', kind:'long',  fcAvgRange:[100,130], label:'Longa CAAD10' },
+  7: { dow:0, code:'DOM', kind:'force-opt', durMin:20, label:'Força leve' },
+};
+const DOW_ORDER = [1,2,3,4,5,6,7];
+
+const FORCE_TYPES = new Set(['WeightTraining','Workout','Yoga','Crossfit','Elliptical','RockClimbing']);
+
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+let tokens = JSON.parse(localStorage.getItem('strava_tokens') || 'null');
+let activities = [];
+let streamCache = {}; // { activityId: {time:[], heartrate:[]} }
+let showAllWeeks = false;
+
+/* ═══════════════════════════════════════════════════════
+   STRAVA AUTH
+═══════════════════════════════════════════════════════ */
+function initStrava() {
+  const p = new URLSearchParams({
+    client_id: STRAVA_CONFIG.client_id,
+    redirect_uri: STRAVA_CONFIG.redirect_uri,
+    response_type: 'code',
+    approval_prompt: 'auto',
+    scope: STRAVA_CONFIG.scope
+  });
+  location.href = 'https://www.strava.com/oauth/authorize?' + p;
 }
 
-/* ── Metrics ── */
-// FIX: TSS fallback usa proxy por duração (não 30 fixo)
-function calcHrTSS(dur,fc){if(!dur||!fc)return 0;return Math.round((dur/3600)*(fc/LTHR)*(fc/LTHR)*100)}
-function tssProxy(a){return calcHrTSS(a.moving_time,a.average_heartrate)||Math.round((a.moving_time||0)/3600*50)||0}
-function calcEF(v,fc){if(!v||!fc)return null;return (v*3.6/fc).toFixed(3)}
-function el(id){return document.getElementById(id)}
-function avg(arr,fn){return arr.length?(arr.reduce((s,v)=>s+fn(v),0)/arr.length):null}
+async function exchangeCode(code) {
+  const r = await fetch('https://www.strava.com/oauth/token', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      client_id: STRAVA_CONFIG.client_id,
+      client_secret: STRAVA_CONFIG.client_secret,
+      code, grant_type:'authorization_code'
+    })
+  });
+  const d = await r.json();
+  if (d.access_token) {
+    tokens = { access_token:d.access_token, refresh_token:d.refresh_token, expires_at:d.expires_at };
+    localStorage.setItem('strava_tokens', JSON.stringify(tokens));
+    history.replaceState({}, '', location.pathname);
+    return true;
+  }
+  return false;
+}
 
-function calcPMC(acts){
-  const dt={};acts.forEach(a=>{const k=a.start_date_local.slice(0,10);dt[k]=(dt[k]||0)+tssProxy(a)});
-  const keys=Object.keys(dt).sort();if(!keys.length)return[];
-  const res=[];let ctl=0,atl=0;
-  for(let d=new Date(keys[0]);d<=new Date();d.setDate(d.getDate()+1)){
-    const k=d.toISOString().slice(0,10),t=dt[k]||0;
-    ctl+=(t-ctl)/42;atl+=(t-atl)/7;
-    res.push({date:k,tss:Math.round(t),ctl:Math.round(ctl*10)/10,atl:Math.round(atl*10)/10,tsb:Math.round((ctl-atl)*10)/10})
-  }return res}
+async function refreshTok() {
+  const r = await fetch('https://www.strava.com/oauth/token', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      client_id: STRAVA_CONFIG.client_id,
+      client_secret: STRAVA_CONFIG.client_secret,
+      refresh_token: tokens.refresh_token,
+      grant_type:'refresh_token'
+    })
+  });
+  const d = await r.json();
+  if (d.access_token) {
+    tokens.access_token = d.access_token;
+    tokens.refresh_token = d.refresh_token;
+    tokens.expires_at = d.expires_at;
+    localStorage.setItem('strava_tokens', JSON.stringify(tokens));
+  }
+}
 
-function getWeeklyTSS(acts,n=16){const wk={};acts.forEach(a=>{const d=new Date(a.start_date_local);const m=new Date(d);m.setDate(d.getDate()-d.getDay()+1);const k=m.toISOString().slice(0,10);wk[k]=(wk[k]||0)+tssProxy(a)});return Object.keys(wk).sort().slice(-n).map(k=>({week:k.slice(5),tss:Math.round(wk[k])}))}
+async function tok() {
+  if (!tokens) return null;
+  if (Date.now()/1000 > tokens.expires_at - 300) await refreshTok();
+  return tokens.access_token;
+}
 
-function getZoneDist(acts){const c=[0,0,0,0,0];let tot=0;acts.forEach(a=>{if(!a.average_heartrate)return;const i=ZONES.findIndex(z=>a.average_heartrate>=z.lo&&a.average_heartrate<z.hi);if(i>=0){c[i]++;tot++}});return tot?c.map(v=>Math.round(v/tot*100)):c}
+function logout() {
+  tokens = null;
+  localStorage.removeItem('strava_tokens');
+  location.reload();
+}
 
-function getMonthlyData(acts){const m={};acts.forEach(a=>{const k=a.start_date_local.slice(0,7);if(!m[k])m[k]={fc:[],dist:0,z:[0,0,0,0,0],ef:[]};if(a.average_heartrate)m[k].fc.push(a.average_heartrate);m[k].dist+=(a.distance||0)/1000;const zi=ZONES.findIndex(z=>(a.average_heartrate||0)>=z.lo&&(a.average_heartrate||0)<z.hi);if(zi>=0)m[k].z[zi]++;const ef=parseFloat(calcEF(a.average_speed,a.average_heartrate));if(ef&&(a.distance||0)/1000>=15)m[k].ef.push(ef)});return m}
+/* ═══════════════════════════════════════════════════════
+   FETCH DATA
+═══════════════════════════════════════════════════════ */
+async function fetchAllActivities() {
+  // Busca rides + treinos desde o início do plano + 4 semanas
+  const token = await tok();
+  if (!token) return [];
+  const planStart = new Date(PLAN_START_DATE);
+  planStart.setDate(planStart.getDate() - 30); // janela de antes/depois
+  const after = Math.floor(planStart.getTime() / 1000);
+  const all = [];
+  for (let page = 1; page <= 6; page++) {
+    setLoading(`Carregando atividades (página ${page})…`);
+    const r = await fetch(
+      `https://www.strava.com/api/v3/athlete/activities?after=${after}&per_page=200&page=${page}`,
+      { headers: { Authorization: 'Bearer ' + token } }
+    );
+    if (!r.ok) break;
+    const data = await r.json();
+    if (!Array.isArray(data) || data.length === 0) break;
+    all.push(...data);
+    if (data.length < 200) break;
+  }
+  return all;
+}
 
-/* ── Current week compliance ── */
-function buildCurrentWeekPanel(acts){
-  const now=new Date(),dow=now.getDay();
-  const mon=new Date(now);mon.setDate(now.getDate()-(dow===0?6:dow-1));mon.setHours(0,0,0,0);
-  const DLBL=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
-  const days=[];for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);days.push(d)}
-  const abd={};acts.forEach(a=>{const k=new Date(a.start_date_local).toISOString().slice(0,10);if(!abd[k])abd[k]=[];abd[k].push(a)});
-  const tss=[0,0,0,0,0,0,0];
-  let html='<div class="week-grid" style="font-family:var(--font-mono);font-size:9px;color:var(--ink3);opacity:.6;letter-spacing:.04em"><span>Dia</span><span></span><span>Prescrito</span><span>Executado</span><span>FC / Zona</span></div>';
-  days.forEach((d,i)=>{
-    const dow2=d.getDay(),pr=WEEK_PRES[dow2];
-    const k=d.toISOString().slice(0,10),acts2=abd[k]||[];
-    const isPast=d<now,isToday=d.toDateString()===now.toDateString();
-    let sc='future',exec='—',fcTxt='—';
-    acts2.forEach(a=>{tss[i]+=tssProxy(a)});
-    const ma=acts2[0];
-    if(pr.rest){sc='rest';exec='Descanso/força';if(ma){exec='Ride: '+((ma.distance||0)/1000).toFixed(0)+'km';sc='warn';if(ma.average_heartrate)fcTxt=ma.average_heartrate+' bpm'}}
-    else if(isPast||isToday){
-      if(!ma){sc='bad';exec='Não registrado'}
-      else{const dist=((ma.distance||0)/1000),vel=((ma.average_speed||0)*3.6).toFixed(1),fc=ma.average_heartrate||0;exec=dist.toFixed(0)+'km @ '+vel+'km/h';const z=fc?getZone(fc):null;if(z)fcTxt=fc+'bpm · '+z.name;sc=!fc?'warn':(fc>=pr.fcLo&&fc<=pr.fcHi)?'ok':'warn'}
+async function fetchStream(activityId) {
+  // Cache em localStorage por id (streams imutáveis)
+  const cacheKey = 'stream_' + activityId;
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    try { return JSON.parse(cached); } catch(e) {}
+  }
+  const token = await tok();
+  const r = await fetch(
+    `https://www.strava.com/api/v3/activities/${activityId}/streams?keys=heartrate,time&key_by_type=true`,
+    { headers: { Authorization: 'Bearer ' + token } }
+  );
+  if (!r.ok) return null;
+  const data = await r.json();
+  const stream = {
+    time: data.time ? data.time.data : null,
+    hr:   data.heartrate ? data.heartrate.data : null
+  };
+  if (stream.hr) {
+    try { localStorage.setItem(cacheKey, JSON.stringify(stream)); } catch(e) {
+      // localStorage cheio — limpa streams antigos
+      clearOldStreams();
+      try { localStorage.setItem(cacheKey, JSON.stringify(stream)); } catch(e2) {}
     }
-    const presText=pr.rest?(pr.type==='force'?'Força/descanso':'Descanso'):pr.zone+' · '+pr.distMin+'–'+pr.distMax+'km';
-    html+='<div class="week-grid'+(isToday?' today':'')+'"><span class="wday">'+DLBL[i]+'</span><span><span class="wstatus '+sc+'"></span></span><span style="font-size:10px;color:var(--ink2)">'+presText+'</span><span style="font-size:11px">'+exec+'</span><span style="font-family:var(--font-mono);font-size:10px;color:var(--ink3)">'+fcTxt+'</span></div>';
-  });
-  el('semanaAtualCard').innerHTML=html;
-  dc('tssSemanaDayChart');
-  charts['tssSemanaDayChart']=new Chart(el('tssSemanaDayChart').getContext('2d'),{type:'bar',data:{labels:DLBL,datasets:[{data:tss,backgroundColor:[C.sl+'bb',C.gd+'bb',C.tl+'66',C.cr+'bb',C.tl+'aa',C.pl+'bb','#e5e4df'],borderRadius:5}]},options:{...bo(0,null),plugins:{legend:{display:false}}}})
+  }
+  return stream;
 }
 
-/* ── Alerts engine ── */
-function buildAlerts(acts){
-  const alerts=[],now=Date.now();
-  const d30=acts.filter(a=>now-new Date(a.start_date_local)<30*864e5);
-  const d28=acts.filter(a=>now-new Date(a.start_date_local)<28*864e5);
-  const satR=d28.filter(a=>new Date(a.start_date_local).getDay()===6&&(a.distance||0)/1000>=30);
+function clearOldStreams() {
+  const keep = new Set(activities.slice(0, 50).map(a => 'stream_' + a.id));
+  for (let i = localStorage.length - 1; i >= 0; i--) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('stream_') && !keep.has(k)) localStorage.removeItem(k);
+  }
+}
 
-  // Sábados Z2
-  if(satR.length){
-    const outZ2=satR.filter(a=>a.average_heartrate&&(a.average_heartrate<109||a.average_heartrate>132));
-    const pct=Math.round(outZ2.length/satR.length*100);
-    if(pct>=50)alerts.push({type:'crit',icon:'🔴',title:'Sábado fora de Z2',body:outZ2.length+'/'+satR.length+' rides de sábado com FC fora de Z2 (109–132 bpm).',fix:'Ação: reduzir ritmo até FC entrar em 109–127. Nas subidas, trocar marcha antes de deixar FC subir.'});
-    else if(pct>0)alerts.push({type:'warn',icon:'🟡',title:'Alguns sábados acima de Z2',body:outZ2.length+'/'+satR.length+' rides de sábado com FC acima de 132 bpm.',fix:'Monitorar FC nas subidas — é onde Z2 estoura com mais frequência.'});
-    else alerts.push({type:'ok',icon:'✅',title:'Sábados em Z2 ('+satR.length+' rides)',body:'Todas as rides de sábado recentes dentro de Z2. Adaptação aeróbica acontecendo.'});
+async function loadStreamsForWeek(weekStart) {
+  // Carrega streams das rides ter/qui da semana atual (precisa de bloco contínuo)
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const rides = activities.filter(a => {
+    const d = new Date(a.start_date_local);
+    const dow = d.getDay();
+    return (a.type === 'Ride' || a.sport_type === 'Ride') &&
+           (dow === 2 || dow === 4) &&
+           d >= weekStart && d <= weekEnd;
+  });
+  let i = 0;
+  for (const r of rides) {
+    i++;
+    setLoading(`Analisando blocos de FC (${i}/${rides.length})…`);
+    if (!streamCache[r.id]) {
+      const s = await fetchStream(r.id);
+      if (s) streamCache[r.id] = s;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   STREAM ANALYSIS — maior janela contínua em zona
+═══════════════════════════════════════════════════════ */
+function maxContinuousMinutesInZone(stream, lo, hi) {
+  if (!stream || !stream.hr || !stream.time) return 0;
+  const hr = stream.hr;
+  const t = stream.time;
+  let best = 0;
+  let windowStart = null;
+  let windowStartIdx = null;
+  for (let i = 0; i < hr.length; i++) {
+    const inZone = hr[i] >= lo && hr[i] <= hi;
+    if (inZone) {
+      if (windowStart === null) {
+        windowStart = t[i];
+        windowStartIdx = i;
+      }
+      const dur = (t[i] - windowStart) / 60;
+      if (dur > best) best = dur;
+    } else {
+      // Tolerância: até 15s fora da zona ainda mantém janela
+      if (windowStart !== null && i > 0 && (t[i] - t[i-1]) > 15) {
+        // gap maior que tolerância
+      }
+      windowStart = null;
+      windowStartIdx = null;
+    }
+  }
+  return Math.round(best * 10) / 10;
+}
+
+/* ═══════════════════════════════════════════════════════
+   DATE / WEEK HELPERS
+═══════════════════════════════════════════════════════ */
+function ymd(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+function mondayOf(d) {
+  const r = new Date(d);
+  r.setHours(0, 0, 0, 0);
+  const dow = r.getDay();
+  const diff = dow === 0 ? -6 : 1 - dow; // segunda-feira da semana
+  r.setDate(r.getDate() + diff);
+  return r;
+}
+
+function planWeekNumber(date) {
+  const start = mondayOf(new Date(PLAN_START_DATE));
+  const target = mondayOf(date);
+  const diffWeeks = Math.floor((target - start) / (7 * 86400000)) + 1;
+  return diffWeeks;
+}
+
+function activitiesOnDate(date) {
+  const ymdTarget = ymd(date);
+  return activities.filter(a => a.start_date_local.slice(0, 10) === ymdTarget);
+}
+
+/* ═══════════════════════════════════════════════════════
+   EVALUATION
+═══════════════════════════════════════════════════════ */
+function evaluateDay(date, weekNum) {
+  const dow = date.getDay();
+  // Mapeia dow -> rxKey
+  const rxKey = DOW_ORDER.find(k => WEEKLY_RX[k].dow === dow);
+  const rx = WEEKLY_RX[rxKey];
+  const today = new Date(); today.setHours(0,0,0,0);
+  const isFuture = date > today;
+  const isToday = date.getTime() === today.getTime();
+
+  const acts = activitiesOnDate(date);
+
+  // SÁBADO — usa dist prescrita do plano
+  const planEntry = GF_PLAN.find(w => w.s === weekNum);
+  const longDist = planEntry ? planEntry.d : 0;
+
+  // Caso 1: dia futuro
+  if (isFuture) {
+    return { status:'future', dow:rx.code, label:rx.label, detail:'futuro', isToday:false };
   }
 
-  // Quinta Z5
-  const thuR=d28.filter(a=>new Date(a.start_date_local).getDay()===4&&(a.distance||0)/1000>=10);
-  if(thuR.length){const z5=thuR.filter(a=>a.average_heartrate&&a.average_heartrate>=164);if(z5.length>=2)alerts.push({type:'warn',icon:'🟡',title:'Quinta ultrapassando Z4 → Z5',body:z5.length+' rides de quinta com FC ≥164 bpm. Qui é Z4 (146–162), não Z5.',fix:'Reduzir duração ou intensidade do bloco. Meta: 12–20min em 146–162 bpm.'})}
-
-  // Sábados perdidos
-  const satDts=new Set(satR.map(a=>a.start_date_local.slice(0,10)));
-  let missed=0;
-  for(let i=1;i<=4;i++){const s=new Date();const offset=(s.getDay()+1)%7;s.setDate(s.getDate()-offset-(i-1)*7);if(!satDts.has(s.toISOString().slice(0,10)))missed++}
-  if(missed>=2)alerts.push({type:'crit',icon:'🚫',title:missed+' sábados sem ride',body:'Plano de 36 semanas depende de consistência. Cada sábado perdido atrasa o pico de CTL.',fix:'Se agenda: ajustar PLAN_START_DATE. Se lesão: semana de recuperação + reiniciar.'});
-
-  // TSB
-  const pmc=calcPMC(acts),cur=pmc[pmc.length-1]||{};
-  if(cur.tsb<-25)alerts.push({type:'crit',icon:'⚡',title:'Overreaching — TSB '+cur.tsb,body:'TSB < −25: fadiga acumulada alta. Risco de lesão e queda imunológica.',fix:'Inserir semana de descarga (−30–40% volume). Priorizar sono e proteína.'});
-  else if(cur.tsb<-15)alerts.push({type:'warn',icon:'🟡',title:'TSB '+cur.tsb+' — zona de atenção',body:'Carga alta mas treinável. Monitorar qualidade do sono e sensação nas rides.',fix:'Se sensação ruim na quarta: considerar descarga antecipada.'});
-
-  // Ramp rate
-  if(pmc.length>=8){const ramp=cur.ctl-(pmc[pmc.length-8]||{ctl:cur.ctl}).ctl;if(ramp>8)alerts.push({type:'warn',icon:'📈',title:'Ramp rate alto: +'+ramp.toFixed(1)+' CTL/sem',body:'Acima de 5–7 CTL/semana aumenta risco de lesão por overuse em 2–4 semanas.',fix:'Não aumentar distância além do plano. Manter descarga a cada 4ª semana.'})}
-
-  // Z3 dominante
-  const zp=getZoneDist(d30);
-  if(zp[2]>40)alerts.push({type:'warn',icon:'🟡',title:'Z3 dominante: '+zp[2]+'% das rides',body:'Zona de lixo acima de 40%. Caro metabolicamente sem estímulo real de adaptação.',fix:'Sábado: reduzir ritmo até FC 109–127. Subidas: trocar marcha em vez de empurrar.'});
-  else if(zp[1]>=45&&zp[2]<30)alerts.push({type:'ok',icon:'✅',title:'Distribuição adequada: '+zp[1]+'% Z2',body:'Z2 ≥45% e Z3 <30% — dentro do padrão polarizado prescrito. Continue.'});
-
-  // Cadência — FIX: average_cadence já é RPM, sem multiplicação
-  const cadR=d30.filter(a=>a.average_cadence);
-  if(cadR.length>=5){const avgCad=Math.round(cadR.reduce((s,a)=>s+a.average_cadence,0)/cadR.length);if(avgCad<78)alerts.push({type:'warn',icon:'🔄',title:'Cadência baixa: '+avgCad+' rpm',body:'Alvo: 85–90rpm nas rides de sábado. Cadência baixa = carga muscular alta = colapso km 80–100.',fix:'Reduzir marcha, manter mesma FC. Girar mais, empurrar menos.'})}
-
-  const cont=el('alertasList');
-  if(!alerts.length){cont.innerHTML='<div class="alert-card info"><div class="alert-icon">ℹ️</div><div><div class="alert-title">Sem alertas</div><div class="alert-body">Dados insuficientes ou tudo dentro dos parâmetros.</div></div></div>';return 0}
-  cont.innerHTML=alerts.map(a=>'<div class="alert-card '+a.type+'"><div class="alert-icon">'+a.icon+'</div><div><div class="alert-title">'+a.title+'</div><div class="alert-body">'+a.body+'</div>'+(a.fix?'<div class="alert-fix">'+a.fix+'</div>':'')+'</div></div>').join('');
-  return alerts.filter(a=>a.type==='crit'||a.type==='warn').length
-}
-
-/* ── Evolution panel ── */
-function buildEvolutionPanel(acts){
-  const planStart=new Date(PLAN_START_DATE);
-  const before=acts.filter(a=>new Date(a.start_date_local)<planStart&&(a.distance||0)/1000>=15&&a.average_heartrate&&a.average_speed);
-  const after=acts.filter(a=>new Date(a.start_date_local)>=planStart&&(a.distance||0)/1000>=15&&a.average_heartrate&&a.average_speed);
-  function fmt(v,d=1){return v!=null?v.toFixed(d):'—'}
-  function delta(a,b,higher=true){if(!a||!b)return'';const p=((a-b)/b*100).toFixed(1);const pos=higher?a>b:a<b;return '<span class="evo-delta '+(pos?'pos':'neg')+'">'+(p>0?'+':'')+p+'%</span>'}
-  const bEF=avg(before,a=>parseFloat(calcEF(a.average_speed,a.average_heartrate)));
-  const aEF=avg(after,a=>parseFloat(calcEF(a.average_speed,a.average_heartrate)));
-  const bFC=avg(before,a=>a.average_heartrate);
-  const aFC=avg(after,a=>a.average_heartrate);
-  const bVel=avg(before,a=>a.average_speed*3.6);
-  const aVel=avg(after,a=>a.average_speed*3.6);
-  const bDist=avg(before,a=>(a.distance||0)/1000);
-  const aDist=avg(after,a=>(a.distance||0)/1000);
-  el('evoCompare').innerHTML=
-    '<div class="evo-block"><div class="evo-label">EF aeróbico — antes</div><div class="evo-val">'+fmt(bEF,3)+'</div><div class="evo-sub">vel/FC média</div></div>'+
-    '<div class="evo-block"><div class="evo-label">EF aeróbico — agora</div><div class="evo-val">'+fmt(aEF,3)+'</div><div class="evo-sub">'+delta(aEF,bEF)+'</div></div>'+
-    '<div class="evo-block"><div class="evo-label">FC média — antes</div><div class="evo-val" style="color:var(--crimson)">'+fmt(bFC,0)+' bpm</div></div>'+
-    '<div class="evo-block"><div class="evo-label">FC média — agora</div><div class="evo-val" style="color:var(--crimson)">'+fmt(aFC,0)+' bpm</div><div class="evo-sub">'+delta(aFC,bFC,false)+'</div></div>'+
-    '<div class="evo-block"><div class="evo-label">Velocidade — antes</div><div class="evo-val">'+fmt(bVel)+' km/h</div></div>'+
-    '<div class="evo-block"><div class="evo-label">Velocidade — agora</div><div class="evo-val">'+fmt(aVel)+' km/h</div><div class="evo-sub">'+delta(aVel,bVel)+'</div></div>'+
-    '<div class="evo-block"><div class="evo-label">Dist. média — antes</div><div class="evo-val">'+fmt(bDist,0)+' km</div></div>'+
-    '<div class="evo-block"><div class="evo-label">Dist. média — agora</div><div class="evo-val">'+fmt(aDist,0)+' km</div><div class="evo-sub">'+delta(aDist,bDist)+'</div></div>';
-
-  // Saturday velocity trend
-  const satR=acts.filter(a=>new Date(a.start_date_local).getDay()===6&&(a.distance||0)/1000>=30&&a.average_speed).sort((a,b)=>new Date(a.start_date_local)-new Date(b.start_date_local));
-  const planStartIdx=satR.findIndex(a=>new Date(a.start_date_local)>=planStart);
-  dc('satVelChart');
-  charts['satVelChart']=new Chart(el('satVelChart').getContext('2d'),{type:'line',data:{labels:satR.map(a=>a.start_date_local.slice(5,10)),datasets:[{label:'Vel. (km/h)',data:satR.map(a=>(a.average_speed*3.6).toFixed(1)),borderColor:C.sl,backgroundColor:C.sl+'18',fill:true,pointRadius:4,pointBackgroundColor:satR.map((_,i)=>i>=planStartIdx&&planStartIdx>=0?C.sl:C.gd),tension:0.3,yAxisID:'y'},{label:'FC (bpm)',data:satR.map(a=>a.average_heartrate||null),borderColor:C.cr+'99',borderDash:[3,3],pointRadius:2,tension:0.3,yAxisID:'y2',spanGaps:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:9},maxTicksLimit:12}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y2:{position:'right',grid:{display:false},ticks:{color:tc(),font:{size:10}}}}}});
-
-  // Monthly EF
-  const mData=getMonthlyData(acts),months=Object.keys(mData).sort().slice(-13);
-  const efM=months.map(m=>{const ef=mData[m].ef;return ef.length?(ef.reduce((s,v)=>s+v,0)/ef.length).toFixed(3):null});
-  dc('efMonthChart');
-  charts['efMonthChart']=new Chart(el('efMonthChart').getContext('2d'),{type:'line',data:{labels:months.map(m=>m.slice(2).replace('-','/')),datasets:[{data:efM,borderColor:C.tl,backgroundColor:C.tl+'18',fill:true,pointRadius:3,pointBackgroundColor:C.tl,tension:0.3,spanGaps:true}]},options:{...bo(null,null),plugins:{legend:{display:false}}}});
-
-  // FC in long rides monthly
-  const fcLong=months.map(m=>{const r=acts.filter(a=>a.start_date_local.startsWith(m)&&(a.distance||0)/1000>=30&&a.average_heartrate);return r.length?(r.reduce((s,a)=>s+a.average_heartrate,0)/r.length).toFixed(0):null});
-  dc('fcLongChart');
-  charts['fcLongChart']=new Chart(el('fcLongChart').getContext('2d'),{type:'line',data:{labels:months.map(m=>m.slice(2).replace('-','/')),datasets:[{data:fcLong,borderColor:C.cr,backgroundColor:C.cr+'18',fill:true,pointRadius:3,tension:0.3,spanGaps:true}]},options:{...bo(100,160),plugins:{legend:{display:false}}}});
-
-  // Z2% monthly
-  const zEvol=months.map(m=>{const tot=mData[m].z.reduce((s,v)=>s+v,0)||1;return Math.round(mData[m].z[1]/tot*100)});
-  dc('z2TrendChart');
-  charts['z2TrendChart']=new Chart(el('z2TrendChart').getContext('2d'),{type:'bar',data:{labels:months.map(m=>m.slice(2).replace('-','/')),datasets:[{label:'% Z2',data:zEvol,backgroundColor:zEvol.map(v=>v>=45?C.sl+'cc':C.gd+'88'),borderRadius:4},{type:'line',label:'Meta 45%',data:months.map(()=>45),borderColor:C.tl,borderDash:[4,3],pointRadius:0,tension:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:9}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}},max:100}}}});
-}
-
-/* ── Charts ── */
-const C={or:'#e8530a',tl:'#0b7a6e',gd:'#c47c0a',sl:'#3d5a80',pl:'#6b3fa0',cr:'#c0332e',gr:'#2d7a3a'};
-const gc=()=>'rgba(28,27,24,0.07)',tc=()=>'rgba(28,27,24,0.38)';
-function bo(mn,mx){return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},min:mn!=null?mn:undefined,max:mx!=null?mx:undefined}}}}
-let charts={};
-function dc(id){if(charts[id]){charts[id].destroy();delete charts[id]}}
-
-function buildPhaseTable(cid,weeks,curW){
-  const e=el(cid);if(!e)return;
-  const cols={desc:'#b0afa8',f1:C.sl,f2:C.gd,f3:C.tl,mile:C.pl};
-  let h='<div class="prog-row" style="font-size:9px;color:var(--ink3);font-family:var(--font-mono);opacity:.6;letter-spacing:.04em"><span>Sem</span><span>Dist.</span><span>FC</span><span>Vel.</span><span>Tipo</span><span>Progresso</span></div>';
-  weeks.forEach(w=>{
-    const isCur=w.s===curW,isDesc=w.desc,isMile=w.milestone;
-    const bc=isDesc?cols.desc:isMile?cols.mile:w.s<=12?cols.f1:w.s<=20?cols.f2:cols.f3;
-    const bw=Math.round(w.d/120*100);
-    const fc=isDesc?'109–120':w.s<=12?'109–127':w.s<=20?'109–130':'109–132';
-    const vel=isDesc?'livre':w.s<=12?(w.d<60?'20–22':'21–23'):w.s<=20?'22–24':'23–25';
-    let badge=isDesc?'<span class="badge bok">↓ desc</span>':isMile?'<span class="badge bpur">🏔 1ª vez</span>':w.s<=12?'<span class="badge bz2">Z2</span>':w.s<=20?'<span class="badge bz3">constr.</span>':'<span class="badge bok">consolid.</span>';
-    h+='<div class="prog-row'+(isDesc?' disc':'')+(isMile?' milestone':'')+(isCur?' curwk':'')+'"><span style="font-weight:700'+(isCur?';color:var(--green)':'')+'">'+w.s+(isCur?' ◀':''+'')+'</span><span style="'+(isMile?'color:var(--plum);font-weight:700':'')+'">'+w.d+' km</span><span>'+fc+'</span><span>'+vel+'</span>'+badge+'<div class="pbar"><div class="pbf" style="width:'+bw+'%;background:'+bc+'"></div></div></div>';
-  });
-  e.innerHTML=h;
-}
-
-function buildStaticCharts(){
-  const pw=getPlanWeek();
-  dc('tssDayChart');
-  charts['tssDayChart']=new Chart(el('tssDayChart').getContext('2d'),{type:'bar',data:{labels:['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],datasets:[{data:[55,65,40,75,30,120,0],backgroundColor:[C.sl+'bb',C.gd+'bb',C.tl+'66',C.cr+'bb',C.tl+'aa',C.pl+'bb','#e5e4df'],borderRadius:5}]},options:{...bo(0,140),plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' ~'+c.raw+' TSS'}}}}});
-
-  // Gran fondo progression — current week in green
-  dc('progGeralChart');
-  const pcolors=GF_PLAN.map((w,i)=>i===pw-1?C.gr+'ee':w.desc?'#b0afa8':w.milestone?C.pl+'cc':w.d===120?C.tl+'cc':C.sl+'cc');
-  charts['progGeralChart']=new Chart(el('progGeralChart').getContext('2d'),{type:'bar',data:{labels:GF_PLAN.map(w=>'S'+w.s),datasets:[{data:GF_PLAN.map(w=>w.d),backgroundColor:pcolors,borderRadius:3}]},options:{...bo(0,130),plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+'km'}}}}});
-
-  dc('cadChart');
-  charts['cadChart']=new Chart(el('cadChart').getContext('2d'),{type:'line',data:{labels:['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12'],datasets:[{label:'Alvo (rpm)',data:[82,83,84,null,85,86,87,null,88,90,90,92],borderColor:C.sl,backgroundColor:C.sl+'18',fill:true,pointRadius:3,tension:0.3,spanGaps:false},{label:'Mínimo',data:[78,78,80,null,82,83,84,null,85,87,88,88],borderColor:'#b0afa8',backgroundColor:'transparent',pointRadius:0,borderDash:[3,3],tension:0.3,spanGaps:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},min:74,max:96}}}});
-
-  dc('suplChart');
-  charts['suplChart']=new Chart(el('suplChart').getContext('2d'),{type:'bar',data:{labels:['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],datasets:[[1,1,1,1,1,1,1],[1,1,1,1,0,1,1],[1,1,1,1,1,1,1],[1,0,0,0,0,0,0],[1,1,0,1,1,0,0]].map((row,i)=>({label:['Creatina 5g','Whey 30g','Magnésio','B12+Folato','Eletrólitos'][i],data:row.map(v=>v*(i+1)),backgroundColor:[C.sl,C.tl,C.pl,C.cr,C.gd][i]+'99',borderRadius:2,categoryPercentage:.75}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},stacked:true},y:{display:false,stacked:true}}}});
-
-  // Phase tables with current week marker
-  buildPhaseTable('fase1Table',GF_PLAN.filter(w=>w.s<=12),pw);
-  buildPhaseTable('f1Table',GF_PLAN.filter(w=>w.s<=12),pw);
-  buildPhaseTable('f2Table',GF_PLAN.filter(w=>w.s>=13&&w.s<=20),pw);
-  buildPhaseTable('f3Table',GF_PLAN.filter(w=>w.s>=21),pw);
-}
-
-function buildDynamicCharts(acts){
-  const now=Date.now();
-  const d30=acts.filter(a=>now-new Date(a.start_date_local)<30*864e5);
-  const long=d30.filter(a=>(a.distance||0)/1000>=15&&a.average_heartrate&&a.average_speed);
-  const pmc=calcPMC(acts),cur=pmc[pmc.length-1]||{};
-  const wTSS=getWeeklyTSS(acts,16);
-  const mData=getMonthlyData(acts),months=Object.keys(mData).sort().slice(-13);
-
-  // PMC metrics
-  const tsbLabel=cur.tsb>0?'forma/pré-competição':cur.tsb>-15?'zona produtiva':'fadiga alta';
-  ['mCtl','pmcCtl'].forEach(id=>{if(el(id))el(id).textContent=cur.ctl||'--'});
-  ['mTsb','pmcTsb'].forEach(id=>{if(el(id))el(id).textContent=cur.tsb||'--'});
-  ['mTsbSub','pmcTsbSub'].forEach(id=>{if(el(id))el(id).textContent=tsbLabel});
-  if(el('pmcAtl'))el('pmcAtl').textContent=cur.atl||'--';
-  if(el('pmcWeekTss'))el('pmcWeekTss').textContent=wTSS.length?wTSS[wTSS.length-1].tss:'--';
-  if(el('pmcRef'))el('pmcRef').textContent=cur.ctl?'CTL '+cur.ctl:'--';
-  if(el('pmcTip'))el('pmcTip').textContent=cur.tsb?'TSB '+cur.tsb+': '+tsbLabel+'. Ramp rate: +'+(cur.ctl-(pmc[pmc.length-8]||{ctl:cur.ctl}).ctl).toFixed(1)+' CTL/semana.':'Aguardando dados...';
-
-  // 30d metrics
-  if(d30.length){
-    const fcAvg=d30.filter(a=>a.average_heartrate).map(a=>a.average_heartrate);
-    const velAvg=d30.map(a=>(a.average_speed||0)*3.6);
-    const efVals=long.map(a=>parseFloat(calcEF(a.average_speed,a.average_heartrate))).filter(Boolean);
-    if(el('mFc'))el('mFc').textContent=fcAvg.length?(fcAvg.reduce((s,v)=>s+v,0)/fcAvg.length).toFixed(0)+' bpm':'--';
-    if(el('mVel'))el('mVel').textContent=velAvg.length?(velAvg.reduce((s,v)=>s+v,0)/velAvg.length).toFixed(1):'--';
-    if(el('mEf'))el('mEf').textContent=efVals.length?(efVals.reduce((s,v)=>s+v,0)/efVals.length).toFixed(3):'--';
-    const longAll=acts.filter(a=>(a.distance||0)/1000>=15&&a.average_heartrate&&a.average_speed);
-    const efAll=longAll.map(a=>parseFloat(calcEF(a.average_speed,a.average_heartrate))).filter(Boolean);
-    if(efAll.length>1){const f=efAll.slice(0,Math.floor(efAll.length/3)),l=efAll.slice(-Math.floor(efAll.length/3));const g=((l.reduce((s,v)=>s+v,0)/l.length-f.reduce((s,v)=>s+v,0)/f.length)/(f.reduce((s,v)=>s+v,0)/f.length)*100).toFixed(0);if(el('mEfSub'))el('mEfSub').textContent=(g>0?'+':'')+g+'% vs início'}
-    if(el('aRides'))el('aRides').textContent=d30.length;
-    if(el('aDist'))el('aDist').textContent=(d30.reduce((s,a)=>s+(a.distance||0),0)/1000).toFixed(0);
-    if(el('aTss'))el('aTss').textContent=d30.reduce((s,a)=>s+tssProxy(a),0);
-    if(el('aElev'))el('aElev').textContent=d30.reduce((s,a)=>s+(a.total_elevation_gain||0),0).toFixed(0);
+  // Caso 2: rest day (não tem mais — dom virou força-opt)
+  // Para QUA e DOM (força): aceita WeightTraining/Workout/etc
+  if (rx.kind === 'force' || rx.kind === 'force-opt') {
+    const force = acts.find(a => FORCE_TYPES.has(a.type) && a.moving_time/60 >= (rx.durMin || 20));
+    if (force) {
+      return {
+        status:'green', dow:rx.code, label:rx.label,
+        detail:`✓ ${Math.round(force.moving_time/60)}min · ${force.type}`,
+        isToday
+      };
+    }
+    if (rx.kind === 'force-opt') {
+      // Domingo: sem força é OK (rest aceitável)
+      return { status:'green', dow:rx.code, label:rx.label, detail:'descanso', isToday };
+    }
+    return { status:'red', dow:rx.code, label:rx.label, detail:'sem força', isToday };
   }
-  const maxDist=Math.max(...acts.map(a=>(a.distance||0)/1000));
-  if(el('mRecord'))el('mRecord').textContent=maxDist?maxDist.toFixed(0)+' km':'--';
-  const lr30=d30.filter(a=>(a.distance||0)/1000>=20&&a.average_speed);
-  if(lr30.length&&el('velAtual'))el('velAtual').textContent=(lr30.reduce((s,a)=>s+a.average_speed*3.6,0)/lr30.length).toFixed(1)+' km/h';
-  // FIX: Strava average_cadence is already full RPM — no multiplication needed
-  const cadR=d30.filter(a=>a.average_cadence);
-  if(cadR.length&&el('cadAtual'))el('cadAtual').textContent=Math.round(cadR.reduce((s,a)=>s+a.average_cadence,0)/cadR.length);
-  if(el('statusDate'))el('statusDate').textContent=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
 
-  // Zone donut
-  const zonePct=getZoneDist(d30);
-  dc('zoneDonut');
-  charts['zoneDonut']=new Chart(el('zoneDonut').getContext('2d'),{type:'doughnut',data:{labels:ZONES.map(z=>z.name),datasets:[{data:zonePct,backgroundColor:ZONES.map(z=>z.color),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:true,position:'right',labels:{color:tc(),font:{size:11},boxWidth:10}},tooltip:{callbacks:{label:c=>' '+c.raw+'%'}}}}});
+  // Rides (seg/ter/qui/sex/sáb)
+  const rides = acts.filter(a => a.type === 'Ride' || a.sport_type === 'Ride');
+  if (rides.length === 0) {
+    return { status:'red', dow:rx.code, label:rx.label, detail:'sem ride', isToday };
+  }
 
-  // FC trend monthly
-  const fcM=months.map(m=>{const fc=mData[m].fc;return fc.length?(fc.reduce((s,v)=>s+v,0)/fc.length).toFixed(1):null});
-  dc('fcTrendChart');
-  charts['fcTrendChart']=new Chart(el('fcTrendChart').getContext('2d'),{type:'line',data:{labels:months.map(m=>m.slice(2).replace('-','/')),datasets:[{data:fcM,borderColor:C.cr,backgroundColor:C.cr+'18',fill:true,pointRadius:3,pointBackgroundColor:C.cr,tension:0.3,spanGaps:true}]},options:{...bo(100,155),plugins:{legend:{display:false}}}});
+  // Agrega total do dia (commute ida + volta)
+  const totalDist = rides.reduce((s,r)=>s+(r.distance||0)/1000, 0);
+  const totalDur  = rides.reduce((s,r)=>s+(r.moving_time||0), 0) / 60;
+  const fcAvg = (() => {
+    const w = rides.filter(r=>r.average_heartrate).reduce((acc,r)=>{
+      acc.sum += r.average_heartrate * r.moving_time;
+      acc.t   += r.moving_time;
+      return acc;
+    }, {sum:0,t:0});
+    return w.t > 0 ? Math.round(w.sum / w.t) : null;
+  })();
 
-  // Weekly volume
-  const wv=(()=>{const wk={};acts.forEach(a=>{const d=new Date(a.start_date_local);const m=new Date(d);m.setDate(d.getDate()-d.getDay()+1);const k=m.toISOString().slice(0,10);wk[k]=(wk[k]||0)+(a.distance||0)/1000});return Object.keys(wk).sort().slice(-12).map(k=>({w:k.slice(5),d:Math.round(wk[k])}))})();
-  dc('weeklyVolChart');
-  charts['weeklyVolChart']=new Chart(el('weeklyVolChart').getContext('2d'),{type:'bar',data:{labels:wv.map(r=>r.w),datasets:[{data:wv.map(r=>r.d),backgroundColor:C.sl+'bb',borderRadius:4}]},options:{...bo(0,null),plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.raw+'km'}}}}});
+  // Critérios
+  const checks = [];
 
-  // Scatter
-  const sc=acts.filter(a=>(a.distance||0)/1000>=15&&a.average_heartrate&&a.average_speed).map(a=>({x:parseFloat((a.distance/1000).toFixed(1)),y:parseFloat((a.average_speed*3.6).toFixed(1)),fc:a.average_heartrate,dt:a.start_date_local.slice(0,10)}));
-  dc('scatterChart');
-  charts['scatterChart']=new Chart(el('scatterChart').getContext('2d'),{type:'scatter',data:{datasets:[{data:sc,backgroundColor:sc.map(p=>p.fc<127?C.tl:p.fc<146?C.gd:C.cr),pointRadius:5,pointHoverRadius:7}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.dt+': '+c.raw.x+'km @ '+c.raw.y+'km/h, FC '+c.raw.fc}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}},title:{display:true,text:'Distância (km)',color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},title:{display:true,text:'Vel. média (km/h)',color:tc(),font:{size:10}}}}}});
+  // Distância
+  let minDist = rx.minDist;
+  if (rx.kind === 'long') minDist = longDist * 0.9;
+  if (minDist != null) {
+    checks.push({
+      name:'dist',
+      ok: totalDist >= minDist,
+      val: totalDist.toFixed(1) + 'km'
+    });
+  }
 
-  // Zone comparison
-  dc('zoneCompChart');
-  charts['zoneCompChart']=new Chart(el('zoneCompChart').getContext('2d'),{type:'bar',data:{labels:['Z1','Z2','Z3','Z4','Z5'],datasets:[{label:'Atual (%)',data:zonePct,backgroundColor:C.sl+'88',borderRadius:3},{label:'Prescrito (%)',data:[25,55,13,7,0],backgroundColor:C.tl+'88',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:11},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},max:80}}}});
+  // Duração mínima
+  if (rx.durMin) {
+    checks.push({
+      name:'dur',
+      ok: totalDur >= rx.durMin,
+      val: Math.round(totalDur) + 'min'
+    });
+  }
 
-  // Zone evolution stacked
-  const zEvol=months.map(m=>{const tot=mData[m].z.reduce((s,v)=>s+v,0)||1;return mData[m].z.map(v=>Math.round(v/tot*100))});
-  dc('zoneEvolChart');
-  charts['zoneEvolChart']=new Chart(el('zoneEvolChart').getContext('2d'),{type:'bar',data:{labels:months.map(m=>m.slice(2).replace('-','/')),datasets:[{label:'Z4/5',data:zEvol.map(z=>z[3]+z[4]),backgroundColor:C.cr+'88',stack:'s'},{label:'Z3',data:zEvol.map(z=>z[2]),backgroundColor:C.gd+'88',stack:'s'},{label:'Z2',data:zEvol.map(z=>z[1]),backgroundColor:C.sl+'88',stack:'s'},{label:'Z1',data:zEvol.map(z=>z[0]),backgroundColor:C.tl+'88',stack:'s'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:9}},stacked:true},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:11}},stacked:true,max:100}}}});
-  const lz=zEvol[zEvol.length-1]||[0,0,0,0,0];
-  if(el('zoneTip'))el('zoneTip').textContent='Mês atual: '+lz[1]+'% Z2, '+lz[2]+'% Z3. Meta: Z2 >45% do volume total.';
+  // FC média
+  if (rx.fcAvgRange && fcAvg != null) {
+    const [lo, hi] = rx.fcAvgRange;
+    checks.push({
+      name:'fc',
+      ok: fcAvg >= lo && fcAvg <= hi,
+      val: fcAvg + 'bpm'
+    });
+  }
 
-  // PMC chart
-  const pmcSl=pmc.slice(-112),pmcWk=[];
-  for(let i=0;i<pmcSl.length;i+=7)pmcWk.push(pmcSl[Math.min(i+6,pmcSl.length-1)]);
-  dc('pmcChart');
-  charts['pmcChart']=new Chart(el('pmcChart').getContext('2d'),{type:'bar',data:{labels:pmcWk.map(r=>r.date.slice(5)),datasets:[{type:'bar',label:'TSS',data:pmcWk.map(r=>r.tss*7),backgroundColor:C.sl+'22',borderRadius:2,yAxisID:'y2'},{type:'line',label:'CTL',data:pmcWk.map(r=>r.ctl),borderColor:C.sl,backgroundColor:'transparent',pointRadius:2,tension:0.3,yAxisID:'y'},{type:'line',label:'ATL',data:pmcWk.map(r=>r.atl),borderColor:C.cr,backgroundColor:'transparent',pointRadius:2,tension:0.3,yAxisID:'y'},{type:'line',label:'TSB',data:pmcWk.map(r=>r.tsb),borderColor:C.tl,backgroundColor:'transparent',pointRadius:2,tension:0.3,borderDash:[4,3],yAxisID:'y'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:tc(),font:{size:10},boxWidth:10}}},scales:{x:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y:{grid:{color:gc()},ticks:{color:tc(),font:{size:10}}},y2:{position:'right',grid:{display:false},ticks:{color:tc(),font:{size:10}}}}}});
+  // Bloco contínuo (streams)
+  if (rx.block) {
+    const longestRide = rides.reduce((a,b)=> (a.moving_time||0) > (b.moving_time||0) ? a : b);
+    const stream = streamCache[longestRide.id];
+    if (stream && stream.hr) {
+      const mins = maxContinuousMinutesInZone(stream, rx.block.lo, rx.block.hi);
+      checks.push({
+        name:'block',
+        ok: mins >= rx.block.minMin,
+        val: mins.toFixed(0) + 'min ' + (rx.block.lo>140?'Z4':'Z3')
+      });
+    } else {
+      checks.push({ name:'block', ok:null, val:'stream?' });
+    }
+  }
 
-  // TSS weekly
-  dc('tssWeeklyChart');
-  charts['tssWeeklyChart']=new Chart(el('tssWeeklyChart').getContext('2d'),{type:'bar',data:{labels:wTSS.map(r=>r.week),datasets:[{data:wTSS.map(r=>r.tss),backgroundColor:wTSS.map(r=>r.tss>450?C.cr+'bb':r.tss>350?C.gd+'bb':C.sl+'bb'),borderRadius:3}]},options:{...bo(0,null),plugins:{legend:{display:false}}}});
+  // Resultado
+  const okCount = checks.filter(c => c.ok === true).length;
+  const failCount = checks.filter(c => c.ok === false).length;
+  const totalNonNull = checks.filter(c => c.ok !== null).length;
 
-  // Activities table — FIX: cadence shown as-is (no *2)
-  const tb=el('actBody');
-  if(tb){const rec=acts.slice(0,30);tb.innerHTML=rec.map(a=>{const dist=((a.distance||0)/1000).toFixed(1),vel=((a.average_speed||0)*3.6).toFixed(1),fc=a.average_heartrate||'--',zone=a.average_heartrate?getZone(a.average_heartrate):null,tss=tssProxy(a),ef=calcEF(a.average_speed,a.average_heartrate)||'--',date=a.start_date_local.slice(0,10),zdot=zone?'<span class="zone-dot" style="background:'+zone.color+'"></span>'+zone.name:'--',cad=a.average_cadence?Math.round(a.average_cadence):'--';return '<tr><td>'+date+'</td><td>'+a.name+'</td><td class="act-dist">'+dist+'km</td><td class="act-vel">'+vel+'</td><td class="act-fc">'+fc+(fc!=='--'?' bpm':'')+'</td><td>'+zdot+'</td><td class="act-vel">'+tss+'</td><td class="act-vel">'+ef+'</td><td class="act-vel">'+cad+'</td></tr>'}).join('')}
+  let status;
+  if (totalNonNull === 0) status = 'amber';
+  else if (failCount === 0) status = 'green';
+  else if (okCount === 0) status = 'red';
+  else status = 'amber';
 
-  // New panels
-  buildCurrentWeekPanel(acts);
-  const alertCount=buildAlerts(acts);
-  buildEvolutionPanel(acts);
-  if(el('mAlertas'))el('mAlertas').textContent=alertCount||'✓';
+  // Resumo curto
+  let detail;
+  if (status === 'green') {
+    detail = totalDist.toFixed(0)+'km · FC ' + (fcAvg||'?');
+  } else {
+    const failed = checks.filter(c => c.ok === false).map(c => c.val).join(' · ');
+    detail = failed || (totalDist.toFixed(0)+'km · FC ' + (fcAvg||'?'));
+  }
+
+  return { status, dow:rx.code, label:rx.label, detail, isToday, checks, fcAvg, totalDist };
 }
 
-/* ── Load data ── */
-async function loadData(){
-  setSS('loading','Carregando rides...');
-  el('stravaBtnText').textContent='Desconectar';
-  el('stravaBtn').classList.add('connected');
-  try{allActivities=await fetchActivities(200,3);setSS('ok','Strava conectado');const lat=allActivities[0]?.start_date_local?.slice(0,10)||'--';el('syncMeta').textContent=allActivities.length+' rides · última: '+lat;buildDynamicCharts(allActivities)}
-  catch(e){setSS('error','Erro ao carregar');console.error(e)}
+function evaluateWeek(weekNum) {
+  const start = mondayOf(new Date(PLAN_START_DATE));
+  start.setDate(start.getDate() + (weekNum - 1) * 7);
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    days.push({ date:d, eval: evaluateDay(d, weekNum) });
+  }
+  return { weekNum, start, days };
 }
 
-/* ── Navigation ── */
-function sw(name,btn){document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));el('tab-'+name).classList.add('active');btn.classList.add('active')}
-function setFase(fase,btn){document.querySelectorAll('#tab-fases .tbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['f1','f2','f3'].forEach(f=>{const e=el('fase-'+f);if(e)e.style.display=f===fase?'block':'none'})}
-function setDia(dia,btn){document.querySelectorAll('#tab-nutricao .tbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');['commute','forca','leve','longa','gf','descanso'].forEach(d=>{const e=el('dia-'+d);if(e)e.style.display=d===dia?'block':'none'})}
+/* ═══════════════════════════════════════════════════════
+   RENDER — BLOCO 1: HOJE/AMANHÃ
+═══════════════════════════════════════════════════════ */
+function renderToday() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+  const wkNum = planWeekNumber(today);
 
-/* ── Boot ── */
-document.addEventListener('DOMContentLoaded',async()=>{
-  renderPlanBanners();
-  buildStaticCharts();
-  const params=new URLSearchParams(window.location.search);
-  const code=params.get('code');
-  if(code){await exchangeCode(code);return}
-  if(tokens){await loadData();return}
-  setSS('idle','Aguardando Strava');
-  el('syncMeta').textContent='Não conectado';
+  const todayEv = evaluateDay(today, wkNum);
+  const tmwEv   = evaluateDay(tomorrow, planWeekNumber(tomorrow));
+
+  // Hoje
+  const planEntry = GF_PLAN.find(w => w.s === wkNum);
+  const ct = document.getElementById('cardToday');
+  let todayClass = 'primary';
+  if (todayEv.status === 'green') todayClass = 'done';
+  else if (todayEv.status === 'red' && !todayEv.isToday) todayClass = 'miss';
+
+  const todayDow = today.toLocaleDateString('pt-BR', { weekday:'short' }).replace('.','');
+  const todayDate = today.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+  const todayDesc = describeRx(WEEKLY_RX[DOW_ORDER.find(k => WEEKLY_RX[k].dow === today.getDay())], planEntry);
+
+  let statusLine;
+  if (todayEv.status === 'green') statusLine = '✓ cumprido — ' + todayEv.detail;
+  else if (todayEv.status === 'amber') statusLine = '⚠ parcial — ' + todayEv.detail;
+  else if (todayEv.status === 'red') statusLine = '✗ falhou — ' + todayEv.detail;
+  else statusLine = 'pendente';
+
+  ct.className = 'day-card ' + todayClass;
+  ct.innerHTML = `
+    <div class="dc-label">HOJE — ${todayDow} ${todayDate}</div>
+    <div class="dc-title">${todayDesc.title}</div>
+    <div class="dc-desc">${todayDesc.desc}</div>
+    <div class="dc-status">${statusLine}</div>
+  `;
+
+  // Amanhã
+  const tmwDow = tomorrow.toLocaleDateString('pt-BR', { weekday:'short' }).replace('.','');
+  const tmwDate = tomorrow.toLocaleDateString('pt-BR', { day:'2-digit', month:'short' });
+  const tmwPlan = GF_PLAN.find(w => w.s === planWeekNumber(tomorrow));
+  const tmwRx = WEEKLY_RX[DOW_ORDER.find(k => WEEKLY_RX[k].dow === tomorrow.getDay())];
+  const tmwDesc = describeRx(tmwRx, tmwPlan);
+
+  document.getElementById('cardTomorrow').innerHTML = `
+    <div class="dc-label">AMANHÃ — ${tmwDow} ${tmwDate}</div>
+    <div class="dc-title">${tmwDesc.title}</div>
+    <div class="dc-desc">${tmwDesc.desc}</div>
+  `;
+
+  document.getElementById('b1Meta').textContent = `Semana ${wkNum} · ${todayDow}`;
+  document.getElementById('planMeta').textContent = `Semana ${wkNum}/36 · plano iniciado ${PLAN_START_DATE}`;
+}
+
+function describeRx(rx, planEntry) {
+  if (!rx) return { title:'—', desc:'' };
+  if (rx.kind === 'force')     return { title:'Força — calistenia', desc:'~45min · empurrar/pernas/core' };
+  if (rx.kind === 'force-opt') return { title:'Força leve ou descanso', desc:'~35min · puxar/core ou rest total' };
+  if (rx.kind === 'long' && planEntry) {
+    return {
+      title: planEntry.d + 'km · CAAD10' + (planEntry.desc ? ' (descarga)' : '') + (planEntry.milestone ? ' 🏔' : ''),
+      desc:  'FC alvo 109–130 · Z2 rígido · cadência 85–90 rpm'
+    };
+  }
+  if (rx.kind === 'ride') {
+    if (rx.code === 'SEG') return { title:'Z2 commute', desc:'17–20km ida em Z2 (FC 109–127) · volta 6km livre' };
+    if (rx.code === 'TER') return { title:'Z3 embutido', desc:'2×8min em Z3 (127–146) no commute · volta livre' };
+    if (rx.code === 'QUI') return { title:'Z4 embutido', desc:'1×12–20min em Z4 (146–164) no commute · volta Z1' };
+    if (rx.code === 'SEX') return { title:'Z1 recuperação', desc:'commute em Z1 (FC <115) · ritmo conversa' };
+  }
+  return { title:rx.label, desc:'' };
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER — BLOCO 2: SEMANA ATUAL
+═══════════════════════════════════════════════════════ */
+function renderWeek() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const wkNum = planWeekNumber(today);
+  const wk = evaluateWeek(wkNum);
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+
+  let issues = [];
+  let okCount = 0, totalPrescribed = 0;
+
+  wk.days.forEach(({ date, eval:ev }) => {
+    const isToday = date.getTime() === today.getTime();
+    let cls = 'dayq';
+    if (ev.status === 'future') cls += ' future';
+    else if (ev.status === 'green') { cls += ' green'; okCount++; totalPrescribed++; }
+    else if (ev.status === 'amber') { cls += ' amber'; totalPrescribed++; }
+    else if (ev.status === 'red')   { cls += ' red';   totalPrescribed++; }
+    if (isToday) cls += ' today';
+
+    let icon;
+    if (ev.status === 'green') icon = '✓';
+    else if (ev.status === 'amber') icon = '⚠';
+    else if (ev.status === 'red') icon = '✗';
+    else if (isToday) icon = '▸';
+    else icon = '·';
+
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="${cls}" title="${ev.label}">
+        <div class="dq-dow">${ev.dow}</div>
+        <div class="dq-icon">${icon}</div>
+        <div class="dq-detail">${ev.detail}</div>
+      </div>
+    `);
+
+    if (ev.status === 'amber' || ev.status === 'red') {
+      issues.push(`<strong>${ev.dow}</strong>: ${ev.detail}`);
+    }
+  });
+
+  document.getElementById('b2Meta').innerHTML = `S${wkNum} · aderência <strong>${okCount}/${totalPrescribed||1}</strong>`;
+  const note = document.getElementById('weekNote');
+  if (issues.length) {
+    note.innerHTML = '⚠ ' + issues.slice(0,3).join(' · ');
+  } else {
+    note.innerHTML = '<span style="color:var(--green)">Tudo verde até aqui.</span>';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER — BLOCO 3: ADERÊNCIA 4 SEMANAS
+═══════════════════════════════════════════════════════ */
+async function renderAdh() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const wkNum = planWeekNumber(today);
+  const grid = document.getElementById('adhGrid');
+  grid.innerHTML = '';
+
+  for (let offset = 3; offset >= 0; offset--) {
+    const wn = wkNum - offset;
+    if (wn < 1) {
+      grid.insertAdjacentHTML('beforeend', `
+        <div class="adh gray">
+          <div class="adh-week">S${wn}</div>
+          <div class="adh-pct">—</div>
+          <div class="adh-sub">pré-plano</div>
+        </div>
+      `);
+      continue;
+    }
+    const planEntry = GF_PLAN.find(w => w.s === wn);
+    const isDesc = planEntry && planEntry.desc;
+    const wk = evaluateWeek(wn);
+    let ok = 0, total = 0;
+    wk.days.forEach(({eval:ev}) => {
+      if (ev.status === 'green') { ok++; total++; }
+      else if (ev.status === 'amber' || ev.status === 'red') total++;
+    });
+    const pct = total > 0 ? Math.round(ok/total*100) : 0;
+    let cls = 'gray';
+    if (total === 0) cls = 'gray';
+    else if (pct >= 80) cls = 'green';
+    else if (pct >= 60) cls = 'amber';
+    else cls = 'red';
+    grid.insertAdjacentHTML('beforeend', `
+      <div class="adh ${cls}">
+        <div class="adh-week">S${wn}${isDesc?' ↓':''}</div>
+        <div class="adh-pct">${total>0?pct+'%':'—'}</div>
+        <div class="adh-sub">${ok}/${total} dias</div>
+      </div>
+    `);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER — BLOCO 4: EVOLUÇÃO
+═══════════════════════════════════════════════════════ */
+function renderEvolution() {
+  const planStart = new Date(PLAN_START_DATE);
+  const longRides = activities.filter(a =>
+    (a.type === 'Ride' || a.sport_type === 'Ride') &&
+    (a.distance||0)/1000 >= 15 &&
+    a.average_heartrate && a.average_speed
+  );
+  const before = longRides.filter(a => new Date(a.start_date_local) < planStart);
+  const after  = longRides.filter(a => new Date(a.start_date_local) >= planStart);
+
+  const avg = arr => arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : null;
+
+  const fcBef = avg(before.map(a => a.average_heartrate));
+  const fcAft = avg(after.map(a => a.average_heartrate));
+  const velBef = avg(before.map(a => a.average_speed * 3.6));
+  const velAft = avg(after.map(a => a.average_speed * 3.6));
+  const distBef = before.length ? Math.max(...before.map(a => a.distance/1000)) : null;
+  const distAft = after.length  ? Math.max(...after.map(a => a.distance/1000))  : null;
+
+  const card = (label, after, before, unit, betterDir) => {
+    if (after == null) return `
+      <div>
+        <div class="evo-label">${label}</div>
+        <div class="evo-row"><div class="evo-num">—</div></div>
+        <div class="evo-base">sem dados pós-plano</div>
+      </div>`;
+    if (before == null) return `
+      <div>
+        <div class="evo-label">${label}</div>
+        <div class="evo-row"><div class="evo-num">${after.toFixed(unit==='%'?0:1)}</div></div>
+        <div class="evo-base">sem dados pré-plano</div>
+      </div>`;
+    const delta = (after - before) / before * 100;
+    const goodDirection = (betterDir === 'down' && delta < 0) || (betterDir === 'up' && delta > 0);
+    const cls = goodDirection ? (betterDir==='down'?'down':'up') : 'bad';
+    const arrow = delta > 0 ? '↑' : '↓';
+    return `
+      <div>
+        <div class="evo-label">${label}</div>
+        <div class="evo-row">
+          <div class="evo-num">${after.toFixed(unit==='km/h'?1:0)}</div>
+          <div class="evo-delta ${cls}">${arrow} ${Math.abs(delta).toFixed(0)}%</div>
+        </div>
+        <div class="evo-base">vs ${before.toFixed(unit==='km/h'?1:0)} ${unit==='%'?'':unit}</div>
+      </div>`;
+  };
+
+  document.getElementById('evoGrid').innerHTML =
+    card('FC média rides longas', fcAft, fcBef, 'bpm', 'down') +
+    card('Vel. rides longas',     velAft, velBef, 'km/h', 'up') +
+    card('Ride mais longa',       distAft, distBef, 'km', 'up');
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER — BLOCO 5: PLANO
+═══════════════════════════════════════════════════════ */
+function renderPlan() {
+  const today = new Date();
+  const wkNow = planWeekNumber(today);
+  const t = document.getElementById('planTable');
+  t.innerHTML = `
+    <div class="plan-row head">
+      <span>Sem</span><span>Dist</span><span>FC</span><span>Tipo</span><span>Status</span>
+    </div>
+  `;
+
+  let weeks;
+  if (showAllWeeks) {
+    weeks = GF_PLAN;
+  } else {
+    const lo = Math.max(1, wkNow - 3);
+    const hi = Math.min(36, wkNow + 3);
+    weeks = GF_PLAN.filter(w => w.s >= lo && w.s <= hi);
+  }
+
+  weeks.forEach(w => {
+    let cls = 'plan-row';
+    let status = '—';
+    if (w.s < wkNow) {
+      cls += ' past';
+      // Status do sábado dessa semana
+      const wk = evaluateWeek(w.s);
+      const sat = wk.days.find(d => d.date.getDay() === 6);
+      if (sat) {
+        if (sat.eval.status === 'green') status = '✓ ' + sat.eval.detail;
+        else if (sat.eval.status === 'amber') status = '⚠ ' + sat.eval.detail;
+        else if (sat.eval.status === 'red') status = '✗ ' + sat.eval.detail;
+      }
+    } else if (w.s === wkNow) {
+      cls += ' current';
+      status = (today.getDay() === 6) ? 'HOJE' : 'em curso';
+    }
+    if (w.desc) cls += ' descarga';
+    if (w.milestone) cls += ' milestone';
+
+    const fcRange = w.d >= 120 ? '109-130' : w.desc ? '109-127' : '109-127';
+    const tipo = w.milestone ? '🏔 1ª vez' : w.desc ? '↓ descarga' : w.s >= 21 ? 'consolid' : w.s >= 13 ? 'construç' : 'base Z2';
+
+    t.insertAdjacentHTML('beforeend', `
+      <div class="${cls}">
+        <span class="plan-week">${w.s}</span>
+        <span class="plan-dist">${w.d}km</span>
+        <span class="plan-fc">${fcRange}</span>
+        <span class="plan-type">${tipo}</span>
+        <span class="plan-status">${status}</span>
+      </div>
+    `);
+  });
+
+  document.getElementById('planToggleBtn').textContent =
+    showAllWeeks ? 'mostrar só janela (±3 semanas)' : 'ver todas as 36 semanas';
+  document.getElementById('b5Meta').textContent =
+    showAllWeeks ? '36 semanas · S' + wkNow + ' atual' : '±3 semanas em volta da atual';
+}
+
+function togglePlan() {
+  showAllWeeks = !showAllWeeks;
+  renderPlan();
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER — BLOCO 6: HISTÓRICO
+═══════════════════════════════════════════════════════ */
+function renderHistory() {
+  const recent = activities
+    .filter(a => a.type === 'Ride' || a.sport_type === 'Ride')
+    .slice(0, 30);
+  const rows = recent.map(a => {
+    const date = a.start_date_local.slice(0,10);
+    const dist = ((a.distance||0)/1000).toFixed(1);
+    const vel  = ((a.average_speed||0)*3.6).toFixed(1);
+    const fc   = a.average_heartrate ? Math.round(a.average_heartrate) : '—';
+    const dur  = Math.round((a.moving_time||0)/60);
+    return `<tr>
+      <td class="act-mono">${date}</td>
+      <td class="act-name">${(a.name||'Ride').replace(/</g,'&lt;')}</td>
+      <td class="act-mono">${dist}km</td>
+      <td class="act-mono">${vel}</td>
+      <td class="act-mono">${fc}</td>
+      <td class="act-mono">${dur}min</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('histRows').innerHTML = rows || '<tr><td colspan="6" style="text-align:center;color:var(--ink3);padding:14px">—</td></tr>';
+}
+
+function toggleHist() {
+  const btn = document.getElementById('histToggleBtn');
+  const body = document.getElementById('histBody');
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+/* ═══════════════════════════════════════════════════════
+   FLOW
+═══════════════════════════════════════════════════════ */
+function show(screen) {
+  document.getElementById('screen-auth').classList.add('hidden');
+  document.getElementById('screen-loading').classList.add('hidden');
+  document.getElementById('screen-main').classList.add('hidden');
+  document.getElementById('screen-' + screen).classList.remove('hidden');
+}
+
+function setLoading(text) {
+  document.getElementById('loading-text').textContent = text;
+}
+
+async function loadAll() {
+  show('loading');
+  try {
+    activities = await fetchAllActivities();
+    activities.sort((a,b) => new Date(b.start_date_local) - new Date(a.start_date_local));
+    setLoading('Analisando blocos de FC…');
+    const today = new Date(); today.setHours(0,0,0,0);
+    const monStart = mondayOf(today);
+    // Carrega streams das últimas 4 semanas (qua e qui)
+    for (let off = 0; off < 4; off++) {
+      const ws = new Date(monStart);
+      ws.setDate(ws.getDate() - off * 7);
+      await loadStreamsForWeek(ws);
+    }
+    setLoading('Montando dashboard…');
+    renderToday();
+    renderWeek();
+    renderAdh();
+    renderEvolution();
+    renderPlan();
+    renderHistory();
+    show('main');
+  } catch (e) {
+    console.error(e);
+    setLoading('Erro: ' + e.message);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', async () => {
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+  if (code) {
+    show('loading');
+    setLoading('Autenticando no Strava…');
+    const ok = await exchangeCode(code);
+    if (ok) {
+      await loadAll();
+    } else {
+      show('auth');
+    }
+    return;
+  }
+  if (tokens) {
+    await loadAll();
+  } else {
+    show('auth');
+  }
 });
 </script>
 </body>
